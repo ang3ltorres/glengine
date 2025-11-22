@@ -3,3 +3,19 @@ merge sprite and drawable into a single class sprite
 create a similar system for 3d -> 
 texture -> sprite
 mesh -> model
+
+Perfect for PS1-style Graphics
+
+Since you said:
+
+"I’m writing a 2D/3D game engine with PSX graphics look"
+
+You will probably add:
+
+✓ Affine texture warping
+✓ 16-bit LUT lighting
+✓ Vertex-skinning clipping quirks
+✓ No subpixel correction (to get PS1 wobble)
+✓ Integer-based viewport transform
+✓ Limited FOV (usually ~50–60°)
+
