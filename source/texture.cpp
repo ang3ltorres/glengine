@@ -2,7 +2,7 @@
 
 #include "graphics.hpp"
 
-using namespace gui;
+using namespace graphics;
 
 //* Generic Vertex data for drawing 2d stuff
 struct Vertex

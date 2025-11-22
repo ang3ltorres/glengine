@@ -3,20 +3,20 @@
 #include "pch.hpp"
 
 #include "sprite.hpp"
-#include "camera.hpp"
+#include "camera2d.hpp"
 
-namespace gui
+namespace graphics
 {
 	class RenderTexture : public Sprite
 	{
 	public:
-		RenderTexture(unsigned int width, unsigned int height, Camera *camera = nullptr);
+		RenderTexture(unsigned int width, unsigned int height, Camera2D *camera = nullptr);
 		RenderTexture(const RenderTexture&) = delete;
 		~RenderTexture();
 
 		GLuint FBO;
 
 		bool internalCamera;
-		Camera *camera;
+		Camera2D *camera;
 	};
 }

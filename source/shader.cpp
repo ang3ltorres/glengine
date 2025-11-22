@@ -1,6 +1,6 @@
 #include "shader.hpp"
 
-using namespace gui;
+using namespace graphics;
 
 char Shader::infoLog[512];
 Shader *Shader::current;

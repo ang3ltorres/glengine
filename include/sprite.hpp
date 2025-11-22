@@ -4,7 +4,7 @@
 
 #include "texture.hpp"
 
-namespace gui
+namespace graphics
 {
 	class Sprite
 	{

@@ -2,7 +2,7 @@
 
 #include "graphics.hpp"
 
-using namespace gui;
+using namespace graphics;
 
 std::bitset<512> Event::keyboardStates;
 std::bitset<8>   Event::mouseStates;

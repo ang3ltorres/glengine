@@ -1,6 +1,6 @@
 #include "graphics.hpp"
 
-using namespace gui;
+using namespace graphics;
 
 int main()
 {

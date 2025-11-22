@@ -16,7 +16,7 @@ layout(std430, binding = 1) buffer GPU_SSBO_buffer
 	GPU_SSBO common_data[];
 };
 
-//* Camera UBO_Shared shared *//
+//* Camera2D UBO_Shared shared *//
 layout(std140, binding = 0) uniform GPU_UBO_buffer_shared
 {
 	mat4 ViewProjection;

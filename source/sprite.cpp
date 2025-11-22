@@ -1,6 +1,6 @@
 #include "sprite.hpp"
 
-using namespace gui;
+using namespace graphics;
 using namespace glm;
 
 Sprite::Sprite(Texture *texture, ivec4 src, ivec4 dst)

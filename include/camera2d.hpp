@@ -2,9 +2,9 @@
 
 #include "pch.hpp"
 
-namespace gui
+namespace graphics
 {
-	class Camera
+	class Camera2D
 	{
 	public:
 		glm::vec2 position;
@@ -17,9 +17,9 @@ namespace gui
 		glm::mat4 projection;
 		glm::mat4 viewProjection;
 
-		Camera(unsigned int width, unsigned int height);
-		Camera(const Camera &) = delete;
-		~Camera() = default;
+		Camera2D(unsigned int width, unsigned int height);
+		Camera2D(const Camera2D &) = delete;
+		~Camera2D() = default;
 		void setPosition(const glm::vec2 &position);
 		void move(const glm::vec2& delta);
 		void setZoom(float zoom);

@@ -5,7 +5,7 @@
 #include "sprite.hpp"
 #include "glyph.hpp"
 
-namespace gui
+namespace graphics
 {
 	class Font : public Sprite
 	{

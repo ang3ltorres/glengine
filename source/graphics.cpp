@@ -1,6 +1,6 @@
 #include "graphics.hpp"
 
-using namespace gui;
+using namespace graphics;
 
 GLFWwindow *Graphics::window;
 unsigned int Graphics::width;
@@ -9,8 +9,8 @@ bool Graphics::forceClose;
 
 GLuint Graphics::currentVAO;
 GLuint Graphics::currentTexture;
-Camera *Graphics::currentCamera;
-Camera *Graphics::defaultCamera;
+Camera2D *Graphics::currentCamera;
+Camera2D *Graphics::defaultCamera;
 
 float Graphics::fps;
 float Graphics::delta;
@@ -48,7 +48,7 @@ void Graphics::initialize(int width, int height, const char *title)
 	Shader::current  = nullptr;
 	Graphics::currentVAO     = 0;
 	Graphics::currentTexture = 0;
-	Graphics::defaultCamera  = new Camera(Graphics::width, Graphics::height);
+	Graphics::defaultCamera  = new Camera2D(Graphics::width, Graphics::height);
 	Graphics::currentCamera  = Graphics::defaultCamera;
 
 	Graphics::fps   = 0.0f;

@@ -4,13 +4,13 @@
 
 #include "event.hpp"
 #include "shader.hpp"
-#include "camera.hpp"
+#include "camera2d.hpp"
 #include "texture.hpp"
 #include "sprite.hpp"
 #include "renderTexture.hpp"
 #include "text.hpp"
 
-namespace gui
+namespace graphics
 {
 	class Graphics
 	{
@@ -33,8 +33,8 @@ namespace gui
 		// Default stuff
 		static GLuint currentVAO;
 		static GLuint currentTexture;
-		static Camera *currentCamera;
-		static Camera *defaultCamera;
+		static Camera2D *currentCamera;
+		static Camera2D *defaultCamera;
 
 		// Time Travel stuff
 		static float fps;
