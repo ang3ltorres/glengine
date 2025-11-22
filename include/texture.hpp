@@ -45,10 +45,6 @@ namespace gui
 		void createBuffers(int textureType);
 
 		Texture(const char *fileName, unsigned int maxInstances);
-		Texture(const char *fileName, unsigned int width, unsigned int height, unsigned int maxInstances);
-		Texture(const std::string &svgData, unsigned int width, unsigned int height, unsigned int maxInstances);
-		Texture(const char *fileName, float percent, unsigned int maxInstances);
-		Texture(const std::string &svgData, float percent, unsigned int maxInstances);
 		Texture(const char *fontPath, unsigned int fontSize, Glyph *glyphs, unsigned int maxInstances);
 		Texture(unsigned int width, unsigned int height, unsigned int maxInstances);
 		Texture(const Texture&) = delete;

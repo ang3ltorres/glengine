@@ -4,7 +4,7 @@ using namespace gui;
 using namespace glm;
 
 RenderTexture::RenderTexture(unsigned int width, unsigned int height, Camera *camera)
-: Drawable::Drawable(new Texture(width, height, 1))
+: Sprite::Sprite(new Texture(width, height, 1))
 {
 	// Camera
 	internalCamera = camera ? false : true;

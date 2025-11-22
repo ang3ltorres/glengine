@@ -2,12 +2,12 @@
 
 #include "pch.hpp"
 
-#include "drawable.hpp"
+#include "sprite.hpp"
 #include "glyph.hpp"
 
 namespace gui
 {
-	class Font : public Drawable
+	class Font : public Sprite
 	{
 	public:
 		Font(const char *fontPath, unsigned int fontSize);

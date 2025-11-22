@@ -2,12 +2,12 @@
 
 #include "pch.hpp"
 
-#include "drawable.hpp"
+#include "sprite.hpp"
 #include "camera.hpp"
 
 namespace gui
 {
-	class RenderTexture : public Drawable
+	class RenderTexture : public Sprite
 	{
 	public:
 		RenderTexture(unsigned int width, unsigned int height, Camera *camera = nullptr);
