@@ -5,8 +5,11 @@
 #include "event.hpp"
 #include "shader.hpp"
 #include "camera2d.hpp"
+#include "camera3d.hpp"
 #include "texture.hpp"
 #include "sprite.hpp"
+#include "mesh.hpp"
+#include "model.hpp"
 #include "renderTexture.hpp"
 #include "text.hpp"
 
@@ -36,6 +39,9 @@ namespace graphics
 		static Camera2D *currentCamera;
 		static Camera2D *defaultCamera;
 
+		static Camera3D *currentCamera3D;
+		static Camera3D *defaultCamera3D;
+
 		// Time Travel stuff
 		static float fps;
 		static float delta;
@@ -44,6 +50,7 @@ namespace graphics
 		static bool shouldClose();
 		static void clearScreen(const glm::uvec4 &color);
 		static void setRenderTexture(RenderTexture *renderTexture = nullptr);
+		static void setCamera3D(Camera3D *camera = nullptr);
 		static void setVAO(GLuint VAO);
 		static void setTexture(GLuint texture);
 		static void drawBuffer();

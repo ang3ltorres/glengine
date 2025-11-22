@@ -12,6 +12,9 @@ GLuint Graphics::currentTexture;
 Camera2D *Graphics::currentCamera;
 Camera2D *Graphics::defaultCamera;
 
+Camera3D *Graphics::currentCamera3D;
+Camera3D *Graphics::defaultCamera3D;
+
 float Graphics::fps;
 float Graphics::delta;
 
@@ -51,6 +54,9 @@ void Graphics::initialize(int width, int height, const char *title)
 	Graphics::defaultCamera  = new Camera2D(Graphics::width, Graphics::height);
 	Graphics::currentCamera  = Graphics::defaultCamera;
 
+	Graphics::defaultCamera3D = new Camera3D((float)Graphics::width, (float)Graphics::height);
+	Graphics::currentCamera3D = Graphics::defaultCamera3D;
+
 	Graphics::fps   = 0.0f;
 	Graphics::delta = 0.0f;
 
@@ -62,10 +68,12 @@ void Graphics::initialize(int width, int height, const char *title)
 
 	// Components
 	Texture::initialize();
+	Mesh::initialize();
 }
 
 void Graphics::finalize()
 {
+	Mesh::finalize();
 	Texture::finalize();
 	glfwTerminate();
 }
@@ -103,6 +111,19 @@ void Graphics::setRenderTexture(RenderTexture *renderTexture)
 
 	//? Submit camera data to GPU (UBO_Shared)
 	glNamedBufferSubData(Texture::UBO_Shared, 0, sizeof(glm::mat4), &Graphics::currentCamera->viewProjection);
+}
+
+void Graphics::setCamera3D(Camera3D *camera)
+{
+	if (camera)
+		Graphics::currentCamera3D = camera;
+	else
+		Graphics::currentCamera3D = Graphics::defaultCamera3D;
+
+	Graphics::currentCamera3D->updateViewProjection();
+
+	//? Submit camera data to GPU (UBO_Shared)
+	glNamedBufferSubData(Mesh::UBO_Shared, 0, sizeof(glm::mat4), &Graphics::currentCamera3D->viewProjection);
 }
 
 void Graphics::setVAO(GLuint VAO)
