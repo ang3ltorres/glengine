@@ -35,6 +35,7 @@ target_link_libraries(glengine PUBLIC
 	glfw
 	GLEW
 	freetype
+	tinygltf
 	png
 	GL
 )

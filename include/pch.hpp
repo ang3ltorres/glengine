@@ -18,3 +18,6 @@
 // FREETYPE
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+// TINYGLTF
+#include <tiny_gltf.h>
