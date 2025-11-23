@@ -23,5 +23,6 @@ namespace graphics
 
 		void updateModel();
 		void batch();
+		void draw();
 	};
 }

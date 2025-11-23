@@ -51,6 +51,9 @@ namespace graphics
 		static void clearScreen(const glm::uvec4 &color);
 		static void setRenderTexture(RenderTexture *renderTexture = nullptr);
 		static void setCamera3D(Camera3D *camera = nullptr);
+		static void setCamera2D(Camera2D *camera = nullptr);
+		static void set2D();
+		static void set3D();
 		static void setVAO(GLuint VAO);
 		static void setTexture(GLuint texture);
 		static void drawBuffer();

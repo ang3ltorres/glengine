@@ -1,5 +1,7 @@
 #include "model.hpp"
 
+#include "graphics.hpp"
+
 using namespace graphics;
 using namespace glm;
 
@@ -28,4 +30,21 @@ void Model::batch()
 		modelMatrix,
 		color
 	};
+}
+
+void Model::draw()
+{
+	if (mesh->currentInstance == 0) return;
+
+	Mesh::shader->use();
+	Graphics::setVAO(mesh->VAO);
+	if (mesh->texture) Graphics::setTexture(mesh->texture->id);
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mesh->SSBO);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Mesh::GPU_SSBO) * mesh->currentInstance, mesh->SSBO_Data);
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Mesh::UBO_Shared);
+
+	glDrawElementsInstanced(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0, mesh->currentInstance);
+	mesh->currentInstance = 0;
 }

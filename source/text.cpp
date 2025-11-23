@@ -94,7 +94,7 @@ void Text::render(const char *text)
 	}
 
 	// Draw all batched glyphs
-	font->texture->draw();
+	font->draw();
 
 	// Reset font texture coordinates for the full texture
 	// font->src = {0, 0, font->texture->width, font->texture->height};

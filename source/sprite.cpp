@@ -1,5 +1,7 @@
 #include "sprite.hpp"
 
+#include "graphics.hpp"
+
 using namespace graphics;
 using namespace glm;
 
@@ -50,4 +52,20 @@ void Sprite::batch()
 		{vec4{color.r, color.g, color.b, color.a}},
 		{model},
 	};
+}
+
+void Sprite::draw()
+{
+	Texture::shader->use();
+	Graphics::setVAO(Texture::VAO);
+	Graphics::setTexture(texture->id);
+	
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, texture->SSBO);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Texture::GPU_SSBO) * texture->currentInstance, texture->SSBO_Data);
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Texture::UBO_Shared);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, texture->UBO_NonShared);
+	
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, texture->currentInstance);
+	texture->currentInstance = 0;
 }

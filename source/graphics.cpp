@@ -1,6 +1,7 @@
 #include "graphics.hpp"
 
 using namespace graphics;
+using namespace glm;
 
 GLFWwindow *Graphics::window;
 unsigned int Graphics::width;
@@ -39,10 +40,8 @@ void Graphics::initialize(int width, int height, const char *title)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_STENCIL_TEST);
-	glDepthMask(GL_FALSE);
   glfwSwapInterval(1);
 	glActiveTexture(GL_TEXTURE0);
 
@@ -51,6 +50,7 @@ void Graphics::initialize(int width, int height, const char *title)
 	Shader::current  = nullptr;
 	Graphics::currentVAO     = 0;
 	Graphics::currentTexture = 0;
+	
 	Graphics::defaultCamera  = new Camera2D(Graphics::width, Graphics::height);
 	Graphics::currentCamera  = Graphics::defaultCamera;
 
@@ -86,10 +86,10 @@ bool Graphics::shouldClose()
 	return glfwWindowShouldClose(Graphics::window);
 }
 
-void Graphics::clearScreen(const glm::uvec4 &color)
+void Graphics::clearScreen(const uvec4 &color)
 {
 	glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Graphics::setRenderTexture(RenderTexture *renderTexture)
@@ -98,19 +98,27 @@ void Graphics::setRenderTexture(RenderTexture *renderTexture)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, renderTexture->FBO);
 		glViewport(0, 0, renderTexture->texture->width, renderTexture->texture->height);
-		Graphics::currentCamera = renderTexture->camera;
+		Graphics::setCamera2D(renderTexture->camera);
 	}
 	else
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, Graphics::width, Graphics::height);
-		Graphics::currentCamera = Graphics::defaultCamera;
+		Graphics::setCamera2D(Graphics::defaultCamera);
 	}
+}
 
-	Graphics::currentCamera->updateViewProjectionMatrix();
+void Graphics::setCamera2D(Camera2D *camera)
+{
+	if (camera)
+		Graphics::currentCamera = camera;
+	else
+		Graphics::currentCamera = Graphics::defaultCamera;
+
+	Graphics::currentCamera->updateViewProjection();
 
 	//? Submit camera data to GPU (UBO_Shared)
-	glNamedBufferSubData(Texture::UBO_Shared, 0, sizeof(glm::mat4), &Graphics::currentCamera->viewProjection);
+	glNamedBufferSubData(Texture::UBO_Shared, 0, sizeof(mat4), &Graphics::currentCamera->viewProjection);
 }
 
 void Graphics::setCamera3D(Camera3D *camera)
@@ -123,7 +131,19 @@ void Graphics::setCamera3D(Camera3D *camera)
 	Graphics::currentCamera3D->updateViewProjection();
 
 	//? Submit camera data to GPU (UBO_Shared)
-	glNamedBufferSubData(Mesh::UBO_Shared, 0, sizeof(glm::mat4), &Graphics::currentCamera3D->viewProjection);
+	glNamedBufferSubData(Mesh::UBO_Shared, 0, sizeof(mat4), &Graphics::currentCamera3D->viewProjection);
+}
+
+void Graphics::set2D()
+{
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
+}
+
+void Graphics::set3D()
+{
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
 }
 
 void Graphics::setVAO(GLuint VAO)

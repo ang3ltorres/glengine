@@ -59,7 +59,5 @@ namespace graphics
 		GPU_SSBO *SSBO_Data;
 		unsigned int maxInstances;
 		unsigned int currentInstance;
-
-		void draw();
 	};
 }

@@ -6,28 +6,28 @@ using namespace glm;
 Camera2D::Camera2D(unsigned int width, unsigned int height)
 : position(0.0f, 0.0f), zoom(1.0f), width(width), height(height), view(0.0f), projection(0.0f), viewProjection(0.0f)
 {
-	updateViewProjectionMatrix();
+	updateViewProjection();
 }
 
 void Camera2D::setPosition(const vec2 &position)
 {
 	this->position = position;
-	updateViewProjectionMatrix();
+	updateViewProjection();
 }
 
 void Camera2D::move(const vec2 &delta)
 {
 	position -= delta;
-	updateViewProjectionMatrix();
+	updateViewProjection();
 }
 
 void Camera2D::setZoom(float zoom)
 {
 	this->zoom = zoom;
-	updateViewProjectionMatrix();
+	updateViewProjection();
 }
 
-void Camera2D::updateViewProjectionMatrix()
+void Camera2D::updateViewProjection()
 {
 	updateView();
 	updateProjection();

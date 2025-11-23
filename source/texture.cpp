@@ -296,19 +296,3 @@ void Texture::updateTexture(unsigned char *pixelData, unsigned int newWidth, uns
 
 	delete[] pixelData;
 }
-
-void Texture::draw()
-{
-	Texture::shader->use();
-	Graphics::setVAO(Texture::VAO);
-	Graphics::setTexture(id);
-	
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBO);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(GPU_SSBO) * currentInstance, SSBO_Data);
-
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Texture::UBO_Shared);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, Texture::UBO_NonShared);
-	
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, currentInstance);
-	currentInstance = 0;
-}

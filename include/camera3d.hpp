@@ -26,7 +26,6 @@ namespace graphics
 		glm::mat4 viewProjection;
 
 		void move(const glm::vec3& pos);
-
 		void rotate(float dYaw, float dPitch, float dRoll = 0.0f);
 
 		void updateView();

@@ -24,6 +24,7 @@ namespace graphics
 
 		void updateModel();
 		void batch();
+		void draw();
 
 		glm::mat4 model;
 	};

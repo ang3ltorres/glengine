@@ -11,6 +11,7 @@ namespace graphics
 		glm::vec3 position;
 		glm::vec2 uv;
 		glm::vec3 normal;
+		glm::vec4 color;
 	};
 
 	class Mesh
@@ -41,7 +42,5 @@ namespace graphics
 		unsigned int maxInstances;
 		unsigned int currentInstance;
 		unsigned int indexCount;
-
-		void draw();
 	};
 }

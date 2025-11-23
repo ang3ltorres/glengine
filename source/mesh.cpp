@@ -51,6 +51,11 @@ Mesh::Mesh(Vertex3D *vertices, unsigned int numVertices, unsigned int *indices, 
 	glVertexArrayAttribFormat(VAO, 2, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, normal));
 	glVertexArrayAttribBinding(VAO, 2, vbufIndex);
 
+	// Color
+	glEnableVertexArrayAttrib(VAO, 3);
+	glVertexArrayAttribFormat(VAO, 3, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, color));
+	glVertexArrayAttribBinding(VAO, 3, vbufIndex);
+
 	// SSBO
 	glCreateBuffers(1, &SSBO);
 	glNamedBufferData(SSBO, sizeof(GPU_SSBO) * maxInstances, nullptr, GL_STREAM_DRAW);
@@ -66,19 +71,3 @@ Mesh::~Mesh()
 	delete[] SSBO_Data;
 }
 
-void Mesh::draw()
-{
-	if (currentInstance == 0) return;
-
-	Mesh::shader->use();
-	Graphics::setVAO(VAO);
-	if (texture) Graphics::setTexture(texture->id);
-
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBO);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(GPU_SSBO) * currentInstance, SSBO_Data);
-
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Mesh::UBO_Shared);
-
-	glDrawElementsInstanced(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0, currentInstance);
-	currentInstance = 0;
-}
