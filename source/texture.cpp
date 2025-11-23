@@ -204,7 +204,7 @@ void Texture::getPixelDataFont(const char *fontPath, unsigned int fontSize, Glyp
 	FT_Done_FreeType(ft);
 }
 
-void Texture::createTexture(unsigned char *pixelData)
+void Texture::createTexture(const unsigned char *pixelData, bool free)
 {
 	glCreateTextures(GL_TEXTURE_2D, 1, &id);
 	glTextureStorage2D(id, 1, GL_RGBA8, width, height);
@@ -216,7 +216,8 @@ void Texture::createTexture(unsigned char *pixelData)
 	glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	delete[] pixelData;
+	if (free)
+		delete[] pixelData;
 }
 
 void Texture::createBuffers(int textureType)
@@ -252,8 +253,15 @@ Texture::Texture(unsigned int width, unsigned int height, unsigned int maxInstan
 : width(width), height(height), maxInstances(maxInstances), currentInstance(0)
 {
 	unsigned char *pixelData = nullptr;
-	createTexture(pixelData);
-	createBuffers(1);	
+	createTexture(pixelData, false);
+	createBuffers(1);
+}
+
+Texture::Texture(const unsigned char *pixelData, unsigned int width, unsigned int height, unsigned int maxInstances)
+: width(width), height(height), maxInstances(maxInstances), currentInstance(0)
+{
+	createTexture(pixelData, false);
+	createBuffers(1);
 }
 
 Texture::~Texture()
@@ -264,7 +272,7 @@ Texture::~Texture()
 	delete[] SSBO_Data;
 }
 
-void Texture::updateTexture(unsigned char *pixelData, unsigned int newWidth, unsigned int newHeight)
+void Texture::updateTexture(const unsigned char *pixelData, unsigned int newWidth, unsigned int newHeight)
 {
 	unsigned int oldWidth = width;
 	unsigned int oldHeight = height;
@@ -293,6 +301,4 @@ void Texture::updateTexture(unsigned char *pixelData, unsigned int newWidth, uns
 	}
 	else
 		glTextureSubImage2D(id, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
-
-	delete[] pixelData;
 }

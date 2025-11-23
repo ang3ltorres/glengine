@@ -34,7 +34,7 @@ static GLuint compileShader(GLenum type, const char *source)
 	if (!success) {
 
 		glGetShaderInfoLog(shader, 512, nullptr, Shader::infoLog);
-		std::println("Shader compilation error:\n{}", Shader::infoLog);
+		printf("Shader compilation error:\n%s\n", Shader::infoLog);
 	}
 	return shader;
 }
@@ -58,7 +58,7 @@ Shader::Shader(const char *vertexShader, const char *fragmentShader)
 	if (!success) {
 		
 		glGetProgramInfoLog(program, 512, nullptr, Shader::infoLog);
-		std::println("Shader linking error:\n{}", Shader::infoLog);
+		printf("Shader linking error:\n%s\n", Shader::infoLog);
 	}
 
 	glDeleteShader(vertex);

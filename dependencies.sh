@@ -23,12 +23,8 @@ includePath="$rootDir/build/dep/include"
 libPath="$rootDir/build/dep/lib"
 
 if [[ -f "$rootDir/build/dep/done" ]]; then
-	echo "Files already downloaded and extracted"
-	echo "Rebuilding dependencies..."
-
-	rm -rf $buildPath $includePath $libPath
-	mkdir -p $buildPath $includePath $libPath
-
+	echo "Dependencies already built"
+	exit 0
 else
 	mkdir -p $downloadPath $extractPath $buildPath $includePath $libPath
 

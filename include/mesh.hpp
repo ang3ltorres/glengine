@@ -28,13 +28,15 @@ namespace graphics
 
 		static Shader *shader;
 		static GLuint UBO_Shared; // ViewProjection
+		static GLuint defaultTexture;
 
-		Mesh(const char *objFile, Texture *texture, unsigned int maxInstances);
+		Mesh(const char *file, Texture *texture, unsigned int maxInstances);
 		Mesh(Vertex3D *vertices, unsigned int numVertices, unsigned int *indices, unsigned int numIndices, Texture *texture, unsigned int maxInstances);
 		Mesh(const Mesh&) = delete;
 		~Mesh();
 
 		Texture *texture;
+		bool ownsTexture = false;
 		GLuint VAO, VBO, EBO;
 		GLuint SSBO;
 		GPU_SSBO *SSBO_Data;

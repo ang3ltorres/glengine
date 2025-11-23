@@ -41,16 +41,17 @@ namespace graphics
 		static GLuint UBO_Shared;
 		
 		// Constructor common
-		void createTexture(unsigned char *pixelData);
+		void createTexture(const unsigned char *pixelData, bool free = true);
 		void createBuffers(int textureType);
 
 		Texture(const char *fileName, unsigned int maxInstances);
 		Texture(const char *fontPath, unsigned int fontSize, Glyph *glyphs, unsigned int maxInstances);
 		Texture(unsigned int width, unsigned int height, unsigned int maxInstances);
+		Texture(const unsigned char *pixelData, unsigned int width, unsigned int height, unsigned int maxInstances);
 		Texture(const Texture&) = delete;
 		~Texture();
 
-		void updateTexture(unsigned char *pixelData, unsigned int newWidth, unsigned int newHeight);
+		void updateTexture(const unsigned char *pixelData, unsigned int newWidth, unsigned int newHeight);
 
 		GLuint UBO_NonShared;
 		int Type;

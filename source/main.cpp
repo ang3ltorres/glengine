@@ -63,14 +63,15 @@ int main()
 	Texture *txr = new Texture("../res/png_test.png", 1);
 	Texture *txr_cube = new Texture("../res/rect1.png", 1);
 	Sprite *spr = new Sprite(txr);
-	Mesh *mesh = new Mesh(vertices, 24, indices, 36, txr, 1);
+	Mesh *mesh2 = new Mesh(vertices, 24, indices, 36, txr, 1);
+	Mesh *mesh = new Mesh("../res/cubeColorTexture.glb", nullptr, 1);
 	Model *model = new Model(mesh);
 
 	// Setup Camera
 	Graphics::currentCamera3D->position = {-200.0f, 00.0f, 0.0f};
 	Graphics::setCamera3D(Graphics::currentCamera3D);
 
-	model->scale = {200.0f, 200.0f, 200.0f};
+	model->scale = {50.0f, 50.0f, 50.0f};
 
 	while (!Graphics::shouldClose())
 	{
@@ -99,6 +100,7 @@ int main()
 
 	delete model;
 	delete mesh;
+	delete mesh2;
 	delete txr;
 	delete txr_cube;
 

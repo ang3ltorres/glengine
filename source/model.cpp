@@ -39,6 +39,7 @@ void Model::draw()
 	Mesh::shader->use();
 	Graphics::setVAO(mesh->VAO);
 	if (mesh->texture) Graphics::setTexture(mesh->texture->id);
+	else Graphics::setTexture(Mesh::defaultTexture);
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mesh->SSBO);
 	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Mesh::GPU_SSBO) * mesh->currentInstance, mesh->SSBO_Data);

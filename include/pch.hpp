@@ -2,9 +2,6 @@
 
 // STD
 #include <bitset>
-#include <functional>
-#include <format>
-#include <print>
 
 // OpenGL
 #define GLFW_INCLUDE_NONE
