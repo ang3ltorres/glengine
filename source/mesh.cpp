@@ -59,11 +59,16 @@ Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
 	std::vector<unsigned int> indices;
 
 	// Iterate through meshes
-	for (const auto& mesh : model.meshes) {
-		for (const auto& primitive : mesh.primitives) {
+	for (const auto& mesh : model.meshes)
+	{
+		for (const auto& primitive : mesh.primitives)
+		{
 			// Helper to get data pointer and stride
-			auto getAttribute = [&](const std::string& name, const tinygltf::Accessor** outAccessor, int* outStride) -> const unsigned char* {
-				if (primitive.attributes.find(name) == primitive.attributes.end()) return nullptr;
+			auto getAttribute = [&](const std::string& name, const tinygltf::Accessor** outAccessor, int* outStride) -> const unsigned char*
+			{
+				if (primitive.attributes.find(name) == primitive.attributes.end())
+					return nullptr;
+
 				*outAccessor = &model.accessors[primitive.attributes.at(name)];
 				const auto& bufferView = model.bufferViews[(*outAccessor)->bufferView];
 				*outStride = bufferView.byteStride ? bufferView.byteStride : tinygltf::GetComponentSizeInBytes((*outAccessor)->componentType) * tinygltf::GetNumComponentsInType((*outAccessor)->type);
@@ -89,7 +94,8 @@ Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
 				const tinygltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
 				const unsigned char* buffer = &(model.buffers[bufferView.buffer].data[accessor.byteOffset + bufferView.byteOffset]);
 
-				for (size_t i = 0; i < accessor.count; ++i) {
+				for (unsigned int i = 0; i < accessor.count; ++i)
+				{
 					unsigned int index = 0;
 					if (accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
 						index = (unsigned int)((const unsigned short*)buffer)[i];
@@ -101,34 +107,34 @@ Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
 				}
 			}
 
-			size_t vertexCount = 0;
+			unsigned int vertexCount = 0;
 			
 			if (posAccessor)
 				vertexCount = posAccessor->count;
 
 			// Append vertices
-			for (size_t i = 0; i < vertexCount; ++i)
+			for (unsigned int i = 0; i < vertexCount; ++i)
 			{
 				Vertex3D v;
 				
 				// Position
 				if (posData)
 				{
-					const float* p = reinterpret_cast<const float*>(posData + i * posStride);
+					const float* p = (float*)(posData + i * posStride);
 					v.position = glm::vec3(p[0], p[1], p[2]);
 				}
 
 				// Normal
 				if (normData)
 				{
-					const float* n = reinterpret_cast<const float*>(normData + i * normStride);
+					const float* n = (float*)(normData + i * normStride);
 					v.normal = glm::vec3(n[0], n[1], n[2]);
 				}
 
 				// UV
 				if (uvData)
 				{
-					const float* u = reinterpret_cast<const float*>(uvData + i * uvStride);
+					const float* u = (float*)(uvData + i * uvStride);
 					v.uv = glm::vec2(u[0], u[1]);
 				}
 
@@ -138,7 +144,7 @@ Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
 					const unsigned char* c = colData + i * colStride;
 					if (colAccessor->componentType == TINYGLTF_COMPONENT_TYPE_FLOAT)
 					{
-						const float* cf = reinterpret_cast<const float*>(c);
+						const float* cf = (float*)(c);
 						if (colAccessor->type == TINYGLTF_TYPE_VEC4)
 							v.color = glm::vec4(cf[0], cf[1], cf[2], cf[3]);
 						else if (colAccessor->type == TINYGLTF_TYPE_VEC3)
@@ -157,7 +163,7 @@ Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
 					{
 						// Normalized unsigned short
 						float scale = 1.0f / 65535.0f;
-						const unsigned short* us = reinterpret_cast<const unsigned short*>(c);
+						const unsigned short* us = (unsigned short*)(c);
 						if (colAccessor->type == TINYGLTF_TYPE_VEC4)
 							v.color = glm::vec4(us[0] * scale, us[1] * scale, us[2] * scale, us[3] * scale);
 						else if (colAccessor->type == TINYGLTF_TYPE_VEC3)

@@ -64,25 +64,26 @@ int main()
 	Texture *txr_cube = new Texture("../res/rect1.png", 1);
 	Sprite *spr = new Sprite(txr);
 	Mesh *mesh2 = new Mesh(vertices, 24, indices, 36, txr, 1);
-	Mesh *mesh = new Mesh("../res/cubeColorTexture.glb", nullptr, 1);
+	Mesh *mesh = new Mesh("../res/cubeColor.glb", nullptr, 1);
 	Model *model = new Model(mesh);
 
 	// Setup Camera
-	Graphics::currentCamera3D->position = {-200.0f, 00.0f, 0.0f};
+	Graphics::currentCamera3D->position = {-4.0f, 00.0f, 0.0f};
+	Graphics::currentCamera3D->fov = 80.0f;
 	Graphics::setCamera3D(Graphics::currentCamera3D);
 
-	model->scale = {50.0f, 50.0f, 50.0f};
+	model->scale = {1.0f, 1.0f, 1.0f};
 
 	while (!Graphics::shouldClose())
 	{
 		if (Event::keyboardStates[GLFW_KEY_ESCAPE])
 			Graphics::forceClose = true;
 
-		Graphics::clearScreen({255, 100, 100, 255});
+		Graphics::clearScreen({0, 0, 0, 255});
 
 		Graphics::set2D();
-		spr->batch();
-		spr->draw();
+		//spr->batch();
+		//spr->draw();
 
 		// Rotate model
 		model->rotation.y += 0.6f;
