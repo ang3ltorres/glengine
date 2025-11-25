@@ -1,7 +1,8 @@
 #include "graphics.hpp"
-#include <vector>
+#include "audio.hpp"
 
 using namespace graphics;
+using namespace audio;
 
 int main()
 {
@@ -9,6 +10,14 @@ int main()
 	unsigned int height = 720;
 
 	Graphics::initialize(width, height, "OpenGL 3D Test");
+	
+	Audio::initialize();
+	Sound *music = new Sound("../res/music.ogg");
+	float pitch = 1.0f;
+	music->setPitch(pitch);
+	music->setLooping(true);
+	music->setVolume(1.0);
+	music->play();
 
 	// Define a cube
 	// Define a cube with separate vertices for each face to allow unique UVs
@@ -79,6 +88,16 @@ int main()
 		if (Event::keyboardStates[GLFW_KEY_ESCAPE])
 			Graphics::forceClose = true;
 
+		if (Event::keyboardStates[GLFW_KEY_RIGHT]) {
+			music->setPitch(pitch);	
+			pitch += 0.001f;
+		}
+
+		if (Event::keyboardStates[GLFW_KEY_LEFT]) {
+			music->setPitch(pitch);
+			pitch -= 0.001f;
+		}
+
 		Graphics::clearScreen({0, 0, 0, 255});
 
 		Graphics::set2D();
@@ -105,6 +124,7 @@ int main()
 	delete txr;
 	delete txr_cube;
 
+	Audio::finalize();
 	Graphics::finalize();
 	return 0;
 }

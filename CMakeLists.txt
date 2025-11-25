@@ -37,6 +37,10 @@ target_link_libraries(glengine PUBLIC
 	freetype
 	tinygltf
 	png
+	stb_vorbis
 	GL
+	dl
+	pthread
+	m
 )
 

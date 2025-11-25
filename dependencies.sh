@@ -29,13 +29,15 @@ else
 	mkdir -p $downloadPath $extractPath $buildPath $includePath $libPath
 
 	# Download dependencies
-	echo "Downloading glfw3";    wget -P "$downloadPath" https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz > /dev/null 2>&1
-	echo "Downloading glew";     wget -P "$downloadPath" -O "$downloadPath/glew-2.2.0.tar.gz" https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz > /dev/null 2>&1
-	echo "Downloading glm";      wget -P "$downloadPath" https://github.com/g-truc/glm/archive/refs/tags/1.0.1.tar.gz > /dev/null 2>&1
-	echo "Downloading zlib";     wget -P "$downloadPath" https://zlib.net/zlib-1.3.1.tar.gz > /dev/null 2>&1
-	echo "Downloading libpng";   wget -P "$downloadPath" https://download.sourceforge.net/libpng/libpng-1.6.45.tar.gz > /dev/null 2>&1
-	echo "Downloading freetype"; wget -P "$downloadPath" -O "$downloadPath/freetype-2.13.3.tar.gz" https://netactuate.dl.sourceforge.net/project/freetype/freetype2/2.13.3/freetype-2.13.3.tar.gz?viasf=1 > /dev/null 2>&1
-	echo "Downloading tinygltf"; wget -P "$downloadPath" https://github.com/syoyo/tinygltf/archive/refs/tags/v2.9.7.tar.gz > /dev/null 2>&1
+	echo "Downloading glfw3";     wget -P "$downloadPath" https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz > /dev/null 2>&1
+	echo "Downloading glew";      wget -P "$downloadPath" -O "$downloadPath/glew-2.2.0.tar.gz" https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz > /dev/null 2>&1
+	echo "Downloading glm";       wget -P "$downloadPath" https://github.com/g-truc/glm/archive/refs/tags/1.0.1.tar.gz > /dev/null 2>&1
+	echo "Downloading zlib";      wget -P "$downloadPath" https://zlib.net/zlib-1.3.1.tar.gz > /dev/null 2>&1
+	echo "Downloading libpng";    wget -P "$downloadPath" https://download.sourceforge.net/libpng/libpng-1.6.45.tar.gz > /dev/null 2>&1
+	echo "Downloading freetype";  wget -P "$downloadPath" -O "$downloadPath/freetype-2.13.3.tar.gz" https://netactuate.dl.sourceforge.net/project/freetype/freetype2/2.13.3/freetype-2.13.3.tar.gz?viasf=1 > /dev/null 2>&1
+	echo "Downloading tinygltf";  wget -P "$downloadPath" https://github.com/syoyo/tinygltf/archive/refs/tags/v2.9.7.tar.gz > /dev/null 2>&1
+	echo "Downloading stbvorbis"; wget -P "$downloadPath" https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_vorbis.c > /dev/null 2>&1
+	echo "Downloading miniaudio"; wget -P "$downloadPath" https://github.com/mackron/miniaudio/archive/refs/tags/0.11.23.tar.gz > /dev/null 2>&1
 
 	# Extract downloaded dependencies
 	for file in "$downloadPath"/*.tar.gz; do
@@ -162,3 +164,14 @@ cmake \
 make -j $cores
 mv libtinygltf.so $libPath
 cd $extractPath/tinygltf-2.9.7; cp *.h *.hpp $includePath/.
+
+## STB_VORBIS
+cd $buildPath; mkdir stb_vorbis; cd stb_vorbis
+cp $downloadPath/stb_vorbis.c .
+g++ -c stb_vorbis.c -o stb_vorbis.o -O3 -s
+ar rcs libstb_vorbis.a stb_vorbis.o
+mv libstb_vorbis.a $libPath
+cp stb_vorbis.c $includePath/.
+
+## MINIAUDIO
+cp -p $extractPath/miniaudio-0.11.23/*.h $includePath/.
