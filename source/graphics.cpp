@@ -138,12 +138,16 @@ void Graphics::set2D()
 {
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
+	glDisable(GL_CULL_FACE);
 }
 
 void Graphics::set3D()
 {
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 }
 
 void Graphics::setVAO(GLuint VAO)

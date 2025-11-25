@@ -34,9 +34,26 @@ void Model::batch()
 
 void Model::draw()
 {
-	if (mesh->currentInstance == 0) return;
+	if (mesh->currentInstance == 0)
+		return;
 
-	Mesh::shader->use();
+	// Use Phong if requested (global)
+	if (Mesh::pEnable)
+	{
+		Mesh::phongShader->use();
+
+		// Set Phong uniforms
+		GLuint prog = Mesh::phongShader->program;
+
+		glUniform3fv(glGetUniformLocation(prog, "light.position"), 1, &Mesh::pLight.position[0]);
+		glUniform3fv(glGetUniformLocation(prog, "light.color"), 1, &Mesh::pLight.color[0]);
+		glUniform1f(glGetUniformLocation(prog, "material.shininess"), Mesh::pMaterial.shininess);
+		glUniform3fv(glGetUniformLocation(prog, "material.specular"), 1, &Mesh::pMaterial.specular[0]);
+		glUniform3fv(glGetUniformLocation(prog, "viewPos"), 1, &Mesh::pViewPos[0]);
+	}
+	else
+		Mesh::shader->use();
+
 	Graphics::setVAO(mesh->VAO);
 	if (mesh->texture) Graphics::setTexture(mesh->texture->id);
 	else Graphics::setTexture(Mesh::defaultTexture);

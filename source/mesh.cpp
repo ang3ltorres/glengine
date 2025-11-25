@@ -1,15 +1,24 @@
 #include "mesh.hpp"
 #include "graphics.hpp"
+#include "shader.hpp"
 
 using namespace graphics;
 
 Shader *Mesh::shader;
+Shader *Mesh::phongShader;
 GLuint Mesh::UBO_Shared;
 GLuint Mesh::defaultTexture;
+
+// Static storage for Phong uniforms
+Mesh::PhongLight Mesh::pLight;
+Mesh::PhongMaterial Mesh::pMaterial;
+glm::vec3 Mesh::pViewPos;
+bool Mesh::pEnable = false;
 
 void Mesh::initialize()
 {
 	Mesh::shader = new Shader("../shader/mesh.vs", "../shader/mesh.fs");
+	Mesh::phongShader = new Shader("../shader/phong.vs", "../shader/phong.fs");
 
 	glCreateBuffers(1, &Mesh::UBO_Shared);
 	glNamedBufferData(Mesh::UBO_Shared, sizeof(glm::mat4), nullptr, GL_STREAM_DRAW);
@@ -24,7 +33,14 @@ void Mesh::finalize()
 {
 	glDeleteTextures(1, &Mesh::defaultTexture);
 	glDeleteBuffers(1, &Mesh::UBO_Shared);
+
 	delete Mesh::shader;
+
+	if (Mesh::phongShader)
+	{
+		delete Mesh::phongShader;
+		Mesh::phongShader = nullptr;
+	}
 }
 
 Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)

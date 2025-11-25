@@ -20,20 +20,36 @@ int main()
 	music->play();
 
 	Texture *txr = new Texture("../res/png_test.png", 1);
-	Texture *txr_cube = new Texture("../res/rect1.png", 1);
 	Sprite *spr = new Sprite(txr);
-	Mesh *mesh = new Mesh("../res/cubeColorTexture.glb", nullptr, 1);
+	Mesh *mesh = new Mesh("../res/stage01.glb", nullptr, 1);
 	Model *model = new Model(mesh);
 	Font *font = new Font("../res/mononoki.ttf", 64);
 	Text *text = new Text(font, "OpenGL 3D Test");
 	text->render("Hello !");
 
 	// Setup Camera
-	Graphics::currentCamera3D->position = {-4.0f, 00.0f, 0.0f};
-	Graphics::currentCamera3D->fov = 80.0f;
+	Graphics::currentCamera3D->position = {10.0f, 2.0f, 0.0f};
+	glm::vec3 dir = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - Graphics::currentCamera3D->position);
+	Graphics::currentCamera3D->yaw = glm::degrees(atan2(dir.z, dir.x));
+	Graphics::currentCamera3D->pitch = glm::degrees(asin(dir.y));
+	Graphics::currentCamera3D->fov = 70.0f;
 	Graphics::setCamera3D(Graphics::currentCamera3D);
 
 	model->scale = {1.0f, 1.0f, 1.0f};
+	model->updateModel();
+
+	// Set up Phong lighting for the stage
+	Mesh::PhongLight light;
+	light.position = glm::vec3(5.0f, 5.0f, 5.0f);
+	light.color = glm::vec3(1.0f, 1.0f, 1.0f);
+	Mesh::pLight = light;
+
+	Mesh::PhongMaterial material;
+	material.shininess = 32.0f;
+	material.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	Mesh::pMaterial = material;
+	Mesh::pViewPos = Graphics::currentCamera3D->position;
+	Mesh::pEnable = true;
 
 	while (!Graphics::shouldClose())
 	{
@@ -61,8 +77,8 @@ int main()
 
 		// Rotate model
 		model->rotation.y += 0.6f;
-		model->rotation.x += 0.3f;
-		model->rotation.z -= 0.2f;
+		//model->rotation.x += 0.3f;
+		//model->rotation.z -= 0.2f;
 		model->updateModel();
 
 		Graphics::set3D();
@@ -78,7 +94,6 @@ int main()
 	delete model;
 	delete mesh;
 	delete txr;
-	delete txr_cube;
 
 	Audio::finalize();
 	Graphics::finalize();
