@@ -9,9 +9,6 @@
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-// PNG
-#include <png.h>
-
 // FREETYPE
 #include <ft2build.h>
 #include FT_FREETYPE_H

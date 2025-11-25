@@ -10,6 +10,12 @@ Text::Text(Font *font, const char *text, float gap)
 	render(text);
 }
 
+Text::~Text()
+{
+	if (renderTexture)
+		delete renderTexture;
+}
+
 void Text::render(const char *text)
 {
 	// Precalculate required texture size
@@ -21,8 +27,8 @@ void Text::render(const char *text)
 
 	for (const char *c = text; *c; c++)
 	{
-		if (*c == ' ') {
-
+		if (*c == ' ')
+		{
 			width += font->fontSize * 0.25f;
 			continue;
 		}

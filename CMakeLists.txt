@@ -36,7 +36,6 @@ target_link_libraries(glengine PUBLIC
 	GLEW
 	freetype
 	tinygltf
-	png
 	stb_vorbis
 	GL
 	dl

@@ -12,13 +12,13 @@ RenderTexture::RenderTexture(unsigned int width, unsigned int height, Camera2D *
 
 	glCreateFramebuffers(1, &FBO);
 	glNamedFramebufferTexture(FBO, GL_COLOR_ATTACHMENT0, texture->id, 0);
-	GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-	glNamedFramebufferDrawBuffers(FBO, 1, drawBuffers);
 }
 
 RenderTexture::~RenderTexture()
 {
-	if (internalCamera) delete camera;
+	if (internalCamera)
+		delete camera;
+		
 	delete texture;
 	glDeleteFramebuffers(1, &FBO);
 }

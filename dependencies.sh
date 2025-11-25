@@ -32,8 +32,6 @@ else
 	echo "Downloading glfw3";     wget -P "$downloadPath" https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz > /dev/null 2>&1
 	echo "Downloading glew";      wget -P "$downloadPath" -O "$downloadPath/glew-2.2.0.tar.gz" https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz > /dev/null 2>&1
 	echo "Downloading glm";       wget -P "$downloadPath" https://github.com/g-truc/glm/archive/refs/tags/1.0.1.tar.gz > /dev/null 2>&1
-	echo "Downloading zlib";      wget -P "$downloadPath" https://zlib.net/zlib-1.3.1.tar.gz > /dev/null 2>&1
-	echo "Downloading libpng";    wget -P "$downloadPath" https://download.sourceforge.net/libpng/libpng-1.6.45.tar.gz > /dev/null 2>&1
 	echo "Downloading freetype";  wget -P "$downloadPath" -O "$downloadPath/freetype-2.13.3.tar.gz" https://netactuate.dl.sourceforge.net/project/freetype/freetype2/2.13.3/freetype-2.13.3.tar.gz?viasf=1 > /dev/null 2>&1
 	echo "Downloading tinygltf";  wget -P "$downloadPath" https://github.com/syoyo/tinygltf/archive/refs/tags/v2.9.7.tar.gz > /dev/null 2>&1
 	echo "Downloading stbvorbis"; wget -P "$downloadPath" https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_vorbis.c > /dev/null 2>&1
@@ -85,41 +83,6 @@ cp -r "${extractPath}/glew-2.2.0/include/GL" $includePath/.
 ## GLM
 cp -r "${extractPath}/glm-1.0.1/glm" $includePath/.
 
-## ZLIB
-cd $buildPath; mkdir zlib; cd zlib
-
-cmake \
-	-G "Unix Makefiles" \
-	-D CMAKE_BUILD_TYPE=Release \
-	-D ZLIB_BUILD_EXAMPLES=OFF \
-	../../extract/zlib-1.3.1
-
-make -j $cores
-mv libz.so libz.so.1 libz.so.1.3.1 $libPath
-cp zconf.h $includePath/.
-cp "${extractPath}/zlib-1.3.1/zlib.h" $includePath/.
-
-## LIBPNG
-cd $buildPath; mkdir libpng; cd libpng
-
-cmake \
-	-G "Unix Makefiles" \
-	-D CMAKE_BUILD_TYPE=Release \
-	-D PNG_BUILD_ZLIB=OFF \
-	-D PNG_HARDWARE_OPTIMIZATIONS=ON \
-	-D PNG_SHARED=ON \
-	-D PNG_STATIC=OFF \
-	-D PNG_TESTS=OFF \
-	-D PNG_TOOLS=OFF \
-	-D ZLIB_INCLUDE_DIR=$includePath \
-	-D ZLIB_LIBRARY_RELEASE=$libPath/libz.so \
-	../../extract/libpng-1.6.45
-
-make -j $cores
-mv libpng.so libpng16.so libpng16.so.16 libpng16.so.16.45.0 $libPath
-cp pnglibconf.h $includePath/.
-cd $extractPath/libpng-1.6.45; cp png.h pngconf.h $includePath/.
-
 ## FREETYPE
 cd $buildPath; mkdir freetype; cd freetype
 
@@ -130,16 +93,10 @@ cmake \
 	-D FT_DISABLE_BROTLI=ON \
 	-D FT_DISABLE_BZIP2=ON \
 	-D FT_DISABLE_HARFBUZZ=ON \
-	-D FT_DISABLE_PNG=OFF \
-	-D FT_DISABLE_ZLIB=OFF \
-	-D FT_REQUIRE_PNG=ON \
-	-D FT_REQUIRE_ZLIB=ON \
-	-D PNG_LIBRARY_DEBUG=PNG_LIBRARY_DEBUG-NOTFOUND \
-	-D PNG_LIBRARY_RELEASE=$libPath/libpng16.so \
-	-D PNG_PNG_INCLUDE_DIR=$includePath \
-	-D ZLIB_LIBRARY_DEBUG=ZLIB_LIBRARY_DEBUG-NOTFOUND \
-	-D ZLIB_LIBRARY_RELEASE=$libPath/libz.so \
-	-D ZLIB_INCLUDE_DIR=$includePath \
+	-D FT_DISABLE_PNG=ON \
+	-D FT_DISABLE_ZLIB=ON \
+	-D FT_REQUIRE_PNG=OFF \
+	-D FT_REQUIRE_ZLIB=OFF \
 	../../extract/freetype-2.13.3
 
 make -j $cores

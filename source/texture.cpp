@@ -1,6 +1,8 @@
 #include "texture.hpp"
 
 #include "graphics.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 using namespace graphics;
 
@@ -77,45 +79,17 @@ void Texture::finalize()
 
 void Texture::getPixelDataPNG(const char *fileName, unsigned char *&buffer, unsigned int *width, unsigned int *height)
 {
-	FILE *fp = fopen(fileName, "rb");
+	int w = 0, h = 0, comp = 0;
+	// Load image with 4 channels (RGBA)
+	
+	unsigned char *data = stbi_load(fileName, &w, &h, &comp, 4);
 
-	png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-	png_infop info = png_create_info_struct(png);
-
-	png_init_io(png, fp);
-	png_read_info(png, info);
-
-	*width  = png_get_image_width(png, info);
-	*height = png_get_image_height(png, info);
-
-	if (png_get_bit_depth(png, info) == 16)
-		png_set_strip_16(png);
-
-	if (png_get_color_type(png, info) == PNG_COLOR_TYPE_PALETTE)
-		png_set_palette_to_rgb(png);
-
-	if (png_get_valid(png, info, PNG_INFO_tRNS))
-		png_set_tRNS_to_alpha(png);
-
-	if (png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY || 
-		png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY_ALPHA)
-		png_set_gray_to_rgb(png);
-
-	png_read_update_info(png, info);
-
-	size_t row_bytes = png_get_rowbytes(png, info);
-
-	buffer = new unsigned char[row_bytes * (*height)];
-
-	png_bytep *row_pointers = new png_bytep[*height];
-	for (unsigned int y = 0; y < *height; y++)
-		row_pointers[y] = buffer + y * row_bytes;
-
-	png_read_image(png, row_pointers);
-
-	delete[] row_pointers;
-	png_destroy_read_struct(&png, &info, nullptr);
-	fclose(fp);
+	*width = (unsigned int)w;
+	*height = (unsigned int)h;
+	size_t size = w * h * 4;
+	buffer = new unsigned char[size];
+	memcpy(buffer, data, size);
+	stbi_image_free(data);
 }
 
 void Texture::getPixelDataFont(const char *fontPath, unsigned int fontSize, Glyph *glyphs, unsigned char *&buffer, unsigned int *width, unsigned int *height)
