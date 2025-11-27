@@ -17,7 +17,7 @@ int main()
 	music->setPitch(pitch);
 	music->setLooping(true);
 	music->setVolume(1.0);
-	music->play();
+	//music->play();
 
 	Texture *txr = new Texture("../res/png_test.png", 1);
 	Sprite *spr = new Sprite(txr);
@@ -28,7 +28,7 @@ int main()
 	text->render("Hello !");
 
 	// Setup Camera
-	Graphics::currentCamera3D->position = {10.0f, 2.0f, 0.0f};
+	Graphics::currentCamera3D->position = {7.0f, 2.0f, 0.0f};
 	glm::vec3 dir = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - Graphics::currentCamera3D->position);
 	Graphics::currentCamera3D->yaw = glm::degrees(atan2(dir.z, dir.x));
 	Graphics::currentCamera3D->pitch = glm::degrees(asin(dir.y));
@@ -38,17 +38,10 @@ int main()
 	model->scale = {1.0f, 1.0f, 1.0f};
 	model->updateModel();
 
-	// Set up Phong lighting for the stage
-	Mesh::PhongLight light;
-	light.position = glm::vec3(5.0f, 5.0f, 5.0f);
-	light.color = glm::vec3(1.0f, 1.0f, 1.0f);
-	Mesh::pLight = light;
-
 	Mesh::PhongMaterial material;
 	material.shininess = 32.0f;
 	material.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 	Mesh::pMaterial = material;
-	Mesh::pViewPos = Graphics::currentCamera3D->position;
 	Mesh::pEnable = true;
 
 	while (!Graphics::shouldClose())
@@ -56,12 +49,14 @@ int main()
 		if (Event::keyboardStates[GLFW_KEY_ESCAPE])
 			Graphics::forceClose = true;
 
-		if (Event::keyboardStates[GLFW_KEY_RIGHT]) {
+		if (Event::keyboardStates[GLFW_KEY_RIGHT])
+		{
 			music->setPitch(pitch);	
 			pitch += 0.001f;
 		}
 
-		if (Event::keyboardStates[GLFW_KEY_LEFT]) {
+		if (Event::keyboardStates[GLFW_KEY_LEFT])
+		{
 			music->setPitch(pitch);
 			pitch -= 0.001f;
 		}
@@ -76,7 +71,7 @@ int main()
 		text->renderTexture->draw();
 
 		// Rotate model
-		model->rotation.y += 0.6f;
+		model->rotation.y += 0.3f;
 		//model->rotation.x += 0.3f;
 		//model->rotation.z -= 0.2f;
 		model->updateModel();

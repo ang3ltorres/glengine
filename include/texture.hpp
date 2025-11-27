@@ -18,7 +18,7 @@ namespace graphics
 			glm::mat4 Model;
 		};
 
-		struct alignas(16) GPU_UBO
+		struct alignas(16) GPU_UBO_CAMERA
 		{
 			alignas(16) glm::mat4 ViewProjection;
 		};

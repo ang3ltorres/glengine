@@ -26,6 +26,9 @@ void Event::EVENT_RESIZED([[maybe_unused]] GLFWwindow *window, int width, int he
 
 void Event::EVENT_KEYBOARD([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods)
 {
+	if (key == GLFW_KEY_UNKNOWN)
+		return;
+
 	if (action == GLFW_PRESS)
 		keyboardStates[key] = true;
 

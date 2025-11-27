@@ -7,12 +7,11 @@ using namespace graphics;
 Shader *Mesh::shader;
 Shader *Mesh::phongShader;
 GLuint Mesh::UBO_Shared;
+GLuint Mesh::UBO_Shared_Light;
 GLuint Mesh::defaultTexture;
 
 // Static storage for Phong uniforms
-Mesh::PhongLight Mesh::pLight;
 Mesh::PhongMaterial Mesh::pMaterial;
-glm::vec3 Mesh::pViewPos;
 bool Mesh::pEnable = false;
 
 void Mesh::initialize()
@@ -21,7 +20,12 @@ void Mesh::initialize()
 	Mesh::phongShader = new Shader("../shader/phong.vs", "../shader/phong.fs");
 
 	glCreateBuffers(1, &Mesh::UBO_Shared);
-	glNamedBufferData(Mesh::UBO_Shared, sizeof(glm::mat4), nullptr, GL_STREAM_DRAW);
+	glNamedBufferData(Mesh::UBO_Shared, sizeof(Mesh::GPU_UBO_CAMERA), nullptr, GL_STREAM_DRAW);
+	glClearNamedBufferData(Mesh::UBO_Shared, GL_R32F, GL_RED, GL_FLOAT, nullptr); // memset to zero
+
+	glCreateBuffers(1, &Mesh::UBO_Shared_Light);
+	glNamedBufferData(Mesh::UBO_Shared_Light, sizeof(Mesh::GPU_UBO_LIGHT), nullptr, GL_STREAM_DRAW);
+	glClearNamedBufferData(Mesh::UBO_Shared_Light, GL_R32F, GL_RED, GL_FLOAT, nullptr); // memset to zero
 
 	unsigned char whitePixel[] = { 255, 255, 255, 255 };
 	glCreateTextures(GL_TEXTURE_2D, 1, &Mesh::defaultTexture);
@@ -44,7 +48,7 @@ void Mesh::finalize()
 }
 
 Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
-: texture(texture), VAO(0), VBO(0), EBO(0), SSBO(0), SSBO_Data(nullptr), maxInstances(maxInstances), currentInstance(0), indexCount(0)
+: texture(texture), VAO(0), VBO(0), EBO(0), SSBO(0), SSBO_Data(nullptr), maxInstances(maxInstances), currentInstance(0), indexCount(0), internalTexture(false)
 {
 	tinygltf::Model model;
 	tinygltf::TinyGLTF loader;
@@ -207,7 +211,7 @@ Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
 						{
 							// Create texture from image data	
 							this->texture = new Texture(img.image.data(), img.width, img.height, maxInstances);
-							this->ownsTexture = true;
+							this->internalTexture = true;
 						}
 					}
 				}
@@ -306,7 +310,7 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &VAO);
 	delete[] SSBO_Data;
 
-	if (ownsTexture && texture)
+	if (internalTexture && texture)
 		delete texture;
 }
 

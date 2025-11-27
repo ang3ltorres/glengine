@@ -152,8 +152,8 @@ void Graphics::set3D()
 
 void Graphics::setVAO(GLuint VAO)
 {
-	if (VAO != Graphics::currentVAO) {
-
+	if (VAO != Graphics::currentVAO)
+	{
 		Graphics::currentVAO = VAO;
 		glBindVertexArray(VAO);
 	}
@@ -161,8 +161,8 @@ void Graphics::setVAO(GLuint VAO)
 
 void Graphics::setTexture(GLuint texture)
 {
-	if (texture != Graphics::currentTexture) {
-
+	if (texture != Graphics::currentTexture)
+	{
 		Graphics::currentTexture = texture;
 		glBindTexture(GL_TEXTURE_2D, texture);
 	}

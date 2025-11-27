@@ -31,8 +31,8 @@ static GLuint compileShader(GLenum type, const char *source)
 	int success;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
-	if (!success) {
-
+	if (!success)
+	{
 		glGetShaderInfoLog(shader, 512, nullptr, Shader::infoLog);
 		printf("Shader compilation error:\n%s\n", Shader::infoLog);
 	}
@@ -55,8 +55,8 @@ Shader::Shader(const char *vertexShader, const char *fragmentShader)
 	GLint success;
 	glGetProgramiv(program, GL_LINK_STATUS, &success);
 
-	if (!success) {
-		
+	if (!success)
+	{
 		glGetProgramInfoLog(program, 512, nullptr, Shader::infoLog);
 		printf("Shader linking error:\n%s\n", Shader::infoLog);
 	}
@@ -75,8 +75,8 @@ Shader::~Shader()
 
 void Shader::use()
 {
-	if (Shader::current != this) {
-
+	if (Shader::current != this)
+	{
 		Shader::current = this;
 		glUseProgram(program);
 	}

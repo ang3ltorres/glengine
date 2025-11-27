@@ -9,42 +9,60 @@ in vec3 Normal;
 
 uniform sampler2D image;
 
-struct Light {
-    vec3 position;
-    vec3 color;
+struct Light
+{
+	vec4 position;
+	vec4 color;
 };
 
-struct Material {
-    float shininess;
-    vec3 specular;
+layout(std140, binding = 2) uniform GPU_UBO_LIGHT
+{
+	Light lights[8];
+	int LightCurrentCount;
 };
 
-uniform Light light;
+struct Material
+{
+	float shininess;
+	vec3 specular;
+};
+
 uniform Material material;
 uniform vec3 viewPos;
 
 void main()
 {
-    vec4 texColor = texture(image, TexCoord);
-    if(texColor.a < 0.1)
-        discard;
+	vec3 resultColor = vec3(0.0);
 
-    // Ambient
-    float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * light.color;
+	for (int i = 0; i < LightCurrentCount; i++)
+	{
+		vec3 lightColor = lights[i].color.rgb;
+		vec3 lightPos   = lights[i].position.xzy;
 
-    // Diffuse
-    vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(light.position - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * light.color;
+		// Ambient
+		float ambientStrength = 0.1;
+		vec3 ambient = ambientStrength * lightColor;
 
-    // Specular
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = material.specular * spec * light.color;
+		// Diffuse
+		vec3 norm = normalize(Normal);
+		vec3 lightDir = normalize(lightPos - FragPos);
+		float diff = max(dot(norm, lightDir), 0.0);
+		vec3 diffuse = diff * lightColor;
 
-    vec3 result = (ambient + diffuse + specular) * texColor.rgb * Color.rgb;
-    FragColor = vec4(result, texColor.a * Color.a);
+		// Specular
+		vec3 viewDir = normalize(viewPos - FragPos);
+		vec3 reflectDir = reflect(-lightDir, norm);
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+		vec3 specular = material.specular * spec * lightColor;
+
+		resultColor += ambient + diffuse + specular;
+	}
+
+	vec4 texColor = texture(image, TexCoord);
+
+	if (texColor.a < 0.1)
+		discard;
+
+	resultColor *= texColor.rgb * Color.rgb;
+	FragColor = vec4(resultColor, texColor.a * Color.a);
 }

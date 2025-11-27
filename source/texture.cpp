@@ -63,9 +63,9 @@ void Texture::initialize()
 	glVertexArrayAttribBinding(Texture::VAO, aTexCoord_location, vbufIndex);
 	glEnableVertexArrayAttrib(Texture::VAO, aTexCoord_location);
 
-	//? Submit camera data to GPU (UBO_Shared)
 	glCreateBuffers(1, &Texture::UBO_Shared);
-	glNamedBufferData(Texture::UBO_Shared, sizeof(glm::mat4), &Graphics::currentCamera->viewProjection, GL_STREAM_DRAW);
+	glNamedBufferData(Texture::UBO_Shared, sizeof(Texture::GPU_UBO_CAMERA), &Graphics::currentCamera->viewProjection, GL_STREAM_DRAW);
+	glClearNamedBufferData(Texture::UBO_Shared, GL_R32F, GL_RED, GL_FLOAT, nullptr); // memset to zero
 }
 
 void Texture::finalize()
