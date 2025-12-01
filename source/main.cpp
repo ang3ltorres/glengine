@@ -39,14 +39,9 @@ int main()
 	model->updateModel();
 
 	// Setup Lighting
+	Mesh::toggleLighting(true);
 	Mesh::addLight({7.0f, 2.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.04f, 0.016f});
 	Mesh::addLight({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.09f, 0.032f});
-
-	Mesh::MATERIAL material;
-	material.shininess = 32.0f;
-	material.specular = glm::vec3(1.0f, 1.0f, 1.0f);
-	Mesh::pMaterial = material;
-	Mesh::pEnable = true;
 
 	while (!Graphics::shouldClose())
 	{

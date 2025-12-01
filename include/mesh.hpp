@@ -26,8 +26,8 @@ namespace graphics
 
 		struct MATERIAL
 		{
-			float shininess;
 			glm::vec3 specular;
+			float shininess;
 		};
 
 		struct alignas(16) GPU_SSBO
@@ -47,17 +47,19 @@ namespace graphics
 		struct alignas(16) GPU_UBO_LIGHT
 		{
 			LIGHT Light[8];
-			int CurrentCount;
+			MATERIAL Material;
+			int LightCount;
+			int Enable;
 		};
 
 		static void initialize();
 		static void finalize();
 
+		static void toggleLighting(bool enable);
 		static int addLight(glm::vec3 position, glm::vec3 color, glm::vec3 attenuation);
 		static void removeLight(int index);
 		
 		static Shader *shader;
-		static Shader *phongShader;
 
 		static GLuint UBO_Shared_Camera; // ViewProjection
 		
@@ -65,9 +67,6 @@ namespace graphics
 		static GPU_UBO_LIGHT UBO_Light_Data;
 		
 		static GLuint defaultTexture;
-
-		static MATERIAL pMaterial;
-		static bool pEnable;
 
 		Mesh(const char *file, Texture *texture, unsigned int maxInstances);
 		Mesh(Vertex3D *vertices, unsigned int numVertices, unsigned int *indices, unsigned int numIndices, Texture *texture, unsigned int maxInstances);

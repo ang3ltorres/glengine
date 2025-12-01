@@ -24,58 +24,63 @@ struct Light
 	vec4 attenuation;
 };
 
+struct Material
+{
+	vec3 specular;
+	float shininess;
+};
+
 layout (std140, binding = 2) uniform UBO_Shared_Light
 {
 	Light lights[8];
-	int CurrentCount;
+	Material material;
+	int LightCount;
+	bool Enable;
 };
-
-struct Material
-{
-	float shininess;
-	vec3 specular;
-};
-
-uniform Material material;
 
 void main()
 {
 	vec3 resultColor = vec3(0.0);
 	vec3 viewPos = CameraPosition.xyz;
 
-	for (int i = 0; i < CurrentCount; i++)
+	if (Enable)
 	{
-		vec3 lightColor = lights[i].color.rgb;
-		vec3 lightPos   = lights[i].position.xzy;
+		for (int i = 0; i < LightCount; i++)
+		{
+			vec3 lightColor = lights[i].color.rgb;
+			vec3 lightPos   = lights[i].position.xzy;
 
-		vec4 attenuationParams = lights[i].attenuation;
-		
-		// Ambient
-		float ambientStrength = 0.1;
-		vec3 ambient = ambientStrength * lightColor;
+			vec4 attenuationParams = lights[i].attenuation;
+			
+			// Ambient
+			float ambientStrength = 0.1;
+			vec3 ambient = ambientStrength * lightColor;
 
-		// Diffuse
-		vec3 norm = normalize(Normal);
-		vec3 lightDir = normalize(lightPos - FragPos);
-		float diff = max(dot(norm, lightDir), 0.0);
-		vec3 diffuse = diff * lightColor;
+			// Diffuse
+			vec3 norm = normalize(Normal);
+			vec3 lightDir = normalize(lightPos - FragPos);
+			float diff = max(dot(norm, lightDir), 0.0);
+			vec3 diffuse = diff * lightColor;
 
-		// Specular
-		vec3 viewDir = normalize(viewPos - FragPos);
-		vec3 reflectDir = reflect(-lightDir, norm);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-		vec3 specular = material.specular * spec * lightColor;
+			// Specular
+			vec3 viewDir = normalize(viewPos - FragPos);
+			vec3 reflectDir = reflect(-lightDir, norm);
+			float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+			vec3 specular = material.specular * spec * lightColor;
 
-		// Attenuation
-		float distance    = length(lightPos - FragPos);
-		float attenuation = 1.0 / (attenuationParams.x + attenuationParams.y * distance + attenuationParams.z * (distance * distance));    
+			// Attenuation
+			float distance    = length(lightPos - FragPos);
+			float attenuation = 1.0 / (attenuationParams.x + attenuationParams.y * distance + attenuationParams.z * (distance * distance));    
 
-		ambient  *= attenuation; 
-		diffuse  *= attenuation;
-		specular *= attenuation;
+			ambient  *= attenuation; 
+			diffuse  *= attenuation;
+			specular *= attenuation;
 
-		resultColor += ambient + diffuse + specular;
+			resultColor += ambient + diffuse + specular;
+		}
 	}
+	else
+		resultColor = vec3(1.0);
 
 	vec4 texColor = texture(image, TexCoord);
 

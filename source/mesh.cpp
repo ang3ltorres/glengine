@@ -5,20 +5,14 @@
 using namespace graphics;
 
 Shader *Mesh::shader;
-Shader *Mesh::phongShader;
 GLuint Mesh::UBO_Shared_Camera;
 GLuint Mesh::UBO_Shared_Light;
 Mesh::GPU_UBO_LIGHT Mesh::UBO_Light_Data;
 GLuint Mesh::defaultTexture;
 
-// Static storage for Phong uniforms
-Mesh::MATERIAL Mesh::pMaterial;
-bool Mesh::pEnable = false;
-
 void Mesh::initialize()
 {
-	Mesh::shader = new Shader("../shader/mesh.vs", "../shader/mesh.fs");
-	Mesh::phongShader = new Shader("../shader/phong.vs", "../shader/phong.fs");
+	Mesh::shader = new Shader("../shader/phong.vs", "../shader/phong.fs");
 
 	glCreateBuffers(1, &Mesh::UBO_Shared_Camera);
 	glNamedBufferData(Mesh::UBO_Shared_Camera, sizeof(Mesh::GPU_UBO_CAMERA), nullptr, GL_STREAM_DRAW);
@@ -28,7 +22,8 @@ void Mesh::initialize()
 	glNamedBufferData(Mesh::UBO_Shared_Light, sizeof(Mesh::GPU_UBO_LIGHT), nullptr, GL_STREAM_DRAW);
 	glClearNamedBufferData(Mesh::UBO_Shared_Light, GL_R32F, GL_RED, GL_FLOAT, nullptr); // memset to zero
 
-	Mesh::UBO_Light_Data.CurrentCount = 0;
+	Mesh::UBO_Light_Data.LightCount = 0;
+	Mesh::UBO_Light_Data.Enable = 0;
 
 	unsigned char whitePixel[] = { 255, 255, 255, 255 };
 	glCreateTextures(GL_TEXTURE_2D, 1, &Mesh::defaultTexture);
@@ -40,38 +35,37 @@ void Mesh::finalize()
 {
 	glDeleteTextures(1, &Mesh::defaultTexture);
 	glDeleteBuffers(1, &Mesh::UBO_Shared_Camera);
-
+	glDeleteBuffers(1, &Mesh::UBO_Shared_Light);
 	delete Mesh::shader;
+}
 
-	if (Mesh::phongShader)
-	{
-		delete Mesh::phongShader;
-		Mesh::phongShader = nullptr;
-	}
+void Mesh::toggleLighting(bool enable)
+{
+	Mesh::UBO_Light_Data.Enable = enable ? 1 : 0;
 }
 
 int Mesh::addLight(glm::vec3 position, glm::vec3 color, glm::vec3 attenuation)
 {
-	if (Mesh::UBO_Light_Data.CurrentCount >= 8)
-		return Mesh::UBO_Light_Data.CurrentCount;
+	if (Mesh::UBO_Light_Data.LightCount >= 8)
+		return Mesh::UBO_Light_Data.LightCount;
 
-	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.CurrentCount].position    = glm::vec4(position, 0.0f);
-	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.CurrentCount].color       = glm::vec4(color, 0.0f);
-	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.CurrentCount].attenuation = glm::vec4(attenuation, 0.0f);
+	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.LightCount].position    = glm::vec4(position, 0.0f);
+	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.LightCount].color       = glm::vec4(color, 0.0f);
+	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.LightCount].attenuation = glm::vec4(attenuation, 0.0f);
 
-	return Mesh::UBO_Light_Data.CurrentCount++;
+	return Mesh::UBO_Light_Data.LightCount++;
 }
 
 void Mesh::removeLight(int index)
 {
-	if (index >= Mesh::UBO_Light_Data.CurrentCount or index < 0)
+	if (index >= Mesh::UBO_Light_Data.LightCount or index < 0)
 		return;
 
 	// Move last light to the removed spot
-	if (index != Mesh::UBO_Light_Data.CurrentCount - 1)
-		Mesh::UBO_Light_Data.Light[index] = Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.CurrentCount - 1];
+	if (index != Mesh::UBO_Light_Data.LightCount - 1)
+		Mesh::UBO_Light_Data.Light[index] = Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.LightCount - 1];
 
-	Mesh::UBO_Light_Data.CurrentCount--;
+	Mesh::UBO_Light_Data.LightCount--;
 }
 
 Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)

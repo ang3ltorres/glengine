@@ -5,8 +5,8 @@
 using namespace graphics;
 using namespace glm;
 
-Model::Model(Mesh *mesh)
-: mesh(mesh), position(0.0f), rotation(0.0f), scale(1.0f), color(1.0f)
+Model::Model(Mesh *mesh, Mesh::MATERIAL material)
+: mesh(mesh), position(0.0f), rotation(0.0f), scale(1.0f), color(1.0f), material(material)
 {
 	updateModel();
 }
@@ -37,24 +37,15 @@ void Model::draw()
 	if (mesh->currentInstance == 0)
 		return;
 
-	if (Mesh::pEnable)
-	{
-		Mesh::phongShader->use();
-		GLuint prog = Mesh::phongShader->program;
+	Mesh::shader->use();
+	GLuint prog = Mesh::shader->program;
 
-		// DEBUG
+	Mesh::UBO_Light_Data.Material = material;
+	glBindBuffer(GL_UNIFORM_BUFFER, Mesh::UBO_Shared_Light);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Mesh::GPU_UBO_LIGHT), &Mesh::UBO_Light_Data);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, Mesh::UBO_Shared_Light);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Mesh::GPU_UBO_LIGHT), &Mesh::UBO_Light_Data);
-		// DEBUG
-
-		// Material
-		glUniform1f(glGetUniformLocation(prog, "material.shininess"), Mesh::pMaterial.shininess);
-		glUniform3fv(glGetUniformLocation(prog, "material.specular"), 1, &Mesh::pMaterial.specular[0]);
-		glUniform1f(glGetUniformLocation(prog, "uTime"), glfwGetTime());
-	}
-	else
-		Mesh::shader->use();
+	// Material
+	glUniform1f(glGetUniformLocation(prog, "uTime"), glfwGetTime());
 
 	Graphics::setVAO(mesh->VAO);
 
