@@ -3,15 +3,14 @@
 in vec4 tint;
 in vec2 TexCoord;
 
-//* Texture type UBO_NonShared buffer *//
-layout(std140, binding = 1) uniform GPU_UBO_buffer_nonshared
+layout (std140, binding = 1) uniform UBO_Type
 {
 	int Type;
 };
 
-layout(location = 0) out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
 
-layout(binding = 0) uniform sampler2D u_Texture;
+layout (binding = 0) uniform sampler2D u_Texture;
 
 void main()
 {

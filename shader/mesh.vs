@@ -19,8 +19,7 @@ layout (std430, binding = 1) buffer SSBO_Data
 	InstanceData instances[];
 };
 
-//* Camera3D UBO_Shared shared *//
-layout (std140, binding = 0) uniform GPU_UBO_buffer_shared
+layout (std140, binding = 0) uniform UBO_Shared_Camera
 {
 	mat4 ViewProjection;
 };

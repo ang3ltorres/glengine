@@ -63,7 +63,7 @@ void Sprite::draw()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, texture->SSBO);
 	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Texture::GPU_SSBO) * texture->currentInstance, texture->SSBO_Data);
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Texture::UBO_Shared);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Texture::UBO_Shared_Camera);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, texture->UBO_NonShared);
 	
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, texture->currentInstance);

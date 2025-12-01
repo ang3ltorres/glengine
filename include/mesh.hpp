@@ -17,13 +17,14 @@ namespace graphics
 	{
 	public:
 
-		struct PhongLight
+		struct LIGHT
 		{
-			glm::vec4 position;
-			glm::vec4 color;
+			glm::vec4 position; // x=position, y=position, z=position, w=unused
+			glm::vec4 color; // x=red, y=green, z=blue, w=unused
+			glm::vec4 attenuation; // x=constant, y=linear, z=quadratic, w=unused
 		};
 
-		struct PhongMaterial
+		struct MATERIAL
 		{
 			float shininess;
 			glm::vec3 specular;
@@ -37,27 +38,35 @@ namespace graphics
 
 		struct alignas(16) GPU_UBO_CAMERA
 		{
-			alignas(16) glm::mat4 ViewProjection;
+			glm::mat4 View;
+			glm::mat4 Projection;
+			glm::mat4 ViewProjection;
+			glm::vec4 CameraPosition;
 		};
 
 		struct alignas(16) GPU_UBO_LIGHT
 		{
-			PhongLight Light[8];
-			int LightCurrentCount;
+			LIGHT Light[8];
+			int CurrentCount;
 		};
 
 		static void initialize();
 		static void finalize();
 
+		static int addLight(glm::vec3 position, glm::vec3 color, glm::vec3 attenuation);
+		static void removeLight(int index);
+		
 		static Shader *shader;
 		static Shader *phongShader;
-		static GLuint UBO_Shared; // ViewProjection
+
+		static GLuint UBO_Shared_Camera; // ViewProjection
+		
 		static GLuint UBO_Shared_Light; // Light
+		static GPU_UBO_LIGHT UBO_Light_Data;
 		
 		static GLuint defaultTexture;
 
-		// Phong lighting static storage
-		static PhongMaterial pMaterial;
+		static MATERIAL pMaterial;
 		static bool pEnable;
 
 		Mesh(const char *file, Texture *texture, unsigned int maxInstances);

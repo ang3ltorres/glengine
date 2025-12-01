@@ -23,10 +23,12 @@ layout (std430, binding = 1) buffer SSBO_Data
 	InstanceData instances[];
 };
 
-//* Camera3D UBO_Shared shared *//
-layout (std140, binding = 0) uniform GPU_UBO_buffer_shared
+layout (std140, binding = 0) uniform UBO_Shared_Camera
 {
+	mat4 View;
+	mat4 Projection;
 	mat4 ViewProjection;
+	vec4 CameraPosition;
 };
 
 void main()
@@ -36,8 +38,8 @@ void main()
 
 	// PSX-style wavy vertex effect
 	vec3 wavyPos = aPos;
-	wavyPos.y += 0.1 * sin(4.0 * wavyPos.x + uTime * 2.0);
-	wavyPos.x += 0.1 * sin(4.0 * wavyPos.z + uTime * 1.5);
+	wavyPos.y += 0.2 * sin(4.0 * wavyPos.x + uTime * 2.0);
+	wavyPos.x += 0.2 * sin(4.0 * wavyPos.z + uTime * 1.5);
 
 	gl_Position = ViewProjection * model * vec4(wavyPos, 1.0);
 	TexCoord = aTexCoord;

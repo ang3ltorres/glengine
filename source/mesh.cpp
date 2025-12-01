@@ -6,12 +6,13 @@ using namespace graphics;
 
 Shader *Mesh::shader;
 Shader *Mesh::phongShader;
-GLuint Mesh::UBO_Shared;
+GLuint Mesh::UBO_Shared_Camera;
 GLuint Mesh::UBO_Shared_Light;
+Mesh::GPU_UBO_LIGHT Mesh::UBO_Light_Data;
 GLuint Mesh::defaultTexture;
 
 // Static storage for Phong uniforms
-Mesh::PhongMaterial Mesh::pMaterial;
+Mesh::MATERIAL Mesh::pMaterial;
 bool Mesh::pEnable = false;
 
 void Mesh::initialize()
@@ -19,13 +20,15 @@ void Mesh::initialize()
 	Mesh::shader = new Shader("../shader/mesh.vs", "../shader/mesh.fs");
 	Mesh::phongShader = new Shader("../shader/phong.vs", "../shader/phong.fs");
 
-	glCreateBuffers(1, &Mesh::UBO_Shared);
-	glNamedBufferData(Mesh::UBO_Shared, sizeof(Mesh::GPU_UBO_CAMERA), nullptr, GL_STREAM_DRAW);
-	glClearNamedBufferData(Mesh::UBO_Shared, GL_R32F, GL_RED, GL_FLOAT, nullptr); // memset to zero
+	glCreateBuffers(1, &Mesh::UBO_Shared_Camera);
+	glNamedBufferData(Mesh::UBO_Shared_Camera, sizeof(Mesh::GPU_UBO_CAMERA), nullptr, GL_STREAM_DRAW);
+	glClearNamedBufferData(Mesh::UBO_Shared_Camera, GL_R32F, GL_RED, GL_FLOAT, nullptr); // memset to zero
 
 	glCreateBuffers(1, &Mesh::UBO_Shared_Light);
 	glNamedBufferData(Mesh::UBO_Shared_Light, sizeof(Mesh::GPU_UBO_LIGHT), nullptr, GL_STREAM_DRAW);
 	glClearNamedBufferData(Mesh::UBO_Shared_Light, GL_R32F, GL_RED, GL_FLOAT, nullptr); // memset to zero
+
+	Mesh::UBO_Light_Data.CurrentCount = 0;
 
 	unsigned char whitePixel[] = { 255, 255, 255, 255 };
 	glCreateTextures(GL_TEXTURE_2D, 1, &Mesh::defaultTexture);
@@ -36,7 +39,7 @@ void Mesh::initialize()
 void Mesh::finalize()
 {
 	glDeleteTextures(1, &Mesh::defaultTexture);
-	glDeleteBuffers(1, &Mesh::UBO_Shared);
+	glDeleteBuffers(1, &Mesh::UBO_Shared_Camera);
 
 	delete Mesh::shader;
 
@@ -45,6 +48,30 @@ void Mesh::finalize()
 		delete Mesh::phongShader;
 		Mesh::phongShader = nullptr;
 	}
+}
+
+int Mesh::addLight(glm::vec3 position, glm::vec3 color, glm::vec3 attenuation)
+{
+	if (Mesh::UBO_Light_Data.CurrentCount >= 8)
+		return Mesh::UBO_Light_Data.CurrentCount;
+
+	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.CurrentCount].position    = glm::vec4(position, 0.0f);
+	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.CurrentCount].color       = glm::vec4(color, 0.0f);
+	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.CurrentCount].attenuation = glm::vec4(attenuation, 0.0f);
+
+	return Mesh::UBO_Light_Data.CurrentCount++;
+}
+
+void Mesh::removeLight(int index)
+{
+	if (index >= Mesh::UBO_Light_Data.CurrentCount or index < 0)
+		return;
+
+	// Move last light to the removed spot
+	if (index != Mesh::UBO_Light_Data.CurrentCount - 1)
+		Mesh::UBO_Light_Data.Light[index] = Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.CurrentCount - 1];
+
+	Mesh::UBO_Light_Data.CurrentCount--;
 }
 
 Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
@@ -210,7 +237,7 @@ Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
 						if (!img.image.empty())
 						{
 							// Create texture from image data	
-							this->texture = new Texture(img.image.data(), img.width, img.height, maxInstances);
+							this->texture = new Texture(img.image.data(), img.width, img.height, 1);
 							this->internalTexture = true;
 						}
 					}

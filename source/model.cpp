@@ -43,21 +43,14 @@ void Model::draw()
 		GLuint prog = Mesh::phongShader->program;
 
 		// DEBUG
-		Mesh::GPU_UBO_LIGHT lightUBO = {};
-
-		lightUBO.Light[0].position = glm::vec4(0.0f, 4.0f, 2.0f, 0.0f);
-		lightUBO.Light[0].color    = glm::vec4(1.0f, 1.0f, 1.0f, 0.0f);
-
-		lightUBO.LightCurrentCount = 1;
 
 		glBindBuffer(GL_UNIFORM_BUFFER, Mesh::UBO_Shared_Light);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Mesh::GPU_UBO_LIGHT), &lightUBO);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Mesh::GPU_UBO_LIGHT), &Mesh::UBO_Light_Data);
 		// DEBUG
 
 		// Material
 		glUniform1f(glGetUniformLocation(prog, "material.shininess"), Mesh::pMaterial.shininess);
 		glUniform3fv(glGetUniformLocation(prog, "material.specular"), 1, &Mesh::pMaterial.specular[0]);
-		glUniform3fv(glGetUniformLocation(prog, "viewPos"), 1, &Graphics::currentCamera3D->position[0]);
 		glUniform1f(glGetUniformLocation(prog, "uTime"), glfwGetTime());
 	}
 	else
@@ -73,7 +66,7 @@ void Model::draw()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mesh->SSBO);
 	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Mesh::GPU_SSBO) * mesh->currentInstance, mesh->SSBO_Data);
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Mesh::UBO_Shared);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Mesh::UBO_Shared_Camera);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 2, Mesh::UBO_Shared_Light);
 
 	glDrawElementsInstanced(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0, mesh->currentInstance);

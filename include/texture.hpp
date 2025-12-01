@@ -38,7 +38,7 @@ namespace graphics
 		static GLuint VAO;
 		static GLuint VBO;
 		static GLuint EBO;
-		static GLuint UBO_Shared;
+		static GLuint UBO_Shared_Camera;
 		
 		// Constructor common
 		void createTexture(const unsigned char *pixelData, bool free = true);

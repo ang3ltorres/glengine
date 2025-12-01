@@ -25,6 +25,7 @@ void Graphics::initialize(int width, int height, const char *title)
 	Graphics::height = height;
 	
 	glfwInit();
+	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -117,8 +118,8 @@ void Graphics::setCamera2D(Camera2D *camera)
 
 	Graphics::currentCamera->updateViewProjection();
 
-	//? Submit camera data to GPU (UBO_Shared)
-	glNamedBufferSubData(Texture::UBO_Shared, 0, sizeof(mat4), &Graphics::currentCamera->viewProjection);
+	//? Submit camera data to GPU (UBO_Shared_Camera)
+	glNamedBufferSubData(Texture::UBO_Shared_Camera, 0, sizeof(mat4), &Graphics::currentCamera->viewProjection);
 }
 
 void Graphics::setCamera3D(Camera3D *camera)
@@ -130,8 +131,14 @@ void Graphics::setCamera3D(Camera3D *camera)
 
 	Graphics::currentCamera3D->updateViewProjection();
 
-	//? Submit camera data to GPU (UBO_Shared)
-	glNamedBufferSubData(Mesh::UBO_Shared, 0, sizeof(mat4), &Graphics::currentCamera3D->viewProjection);
+	static Mesh::GPU_UBO_CAMERA GPU_UBO_CAMERA;
+	GPU_UBO_CAMERA.View = Graphics::currentCamera3D->view;
+	GPU_UBO_CAMERA.Projection = Graphics::currentCamera3D->projection;
+	GPU_UBO_CAMERA.ViewProjection = Graphics::currentCamera3D->viewProjection;
+	GPU_UBO_CAMERA.CameraPosition = glm::vec4(Graphics::currentCamera3D->position, 1.0f);
+
+	//? Submit camera data to GPU (UBO_Shared_Camera)
+	glNamedBufferSubData(Mesh::UBO_Shared_Camera, 0, sizeof(Mesh::GPU_UBO_CAMERA), &GPU_UBO_CAMERA);
 }
 
 void Graphics::set2D()

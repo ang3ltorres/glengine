@@ -31,7 +31,7 @@ Shader *Texture::shader;
 GLuint Texture::VAO;
 GLuint Texture::VBO;
 GLuint Texture::EBO;
-GLuint Texture::UBO_Shared;
+GLuint Texture::UBO_Shared_Camera;
 
 void Texture::initialize()
 {
@@ -51,26 +51,26 @@ void Texture::initialize()
 	GLuint vbufIndex = 0;
 	glVertexArrayVertexBuffer(Texture::VAO, vbufIndex, Texture::VBO, 0, sizeof(Vertex));
 
-	//! layout(location = 0) in vec2 aPos;
+	//! layout (location = 0) in vec2 aPos;
 	GLuint aPos_location = 0;
 	glVertexArrayAttribFormat(Texture::VAO, aPos_location, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
 	glVertexArrayAttribBinding(Texture::VAO, aPos_location, vbufIndex);
 	glEnableVertexArrayAttrib(Texture::VAO, aPos_location);
 
-	//! layout(location = 1) in vec2 aTexCoord;
+	//! layout (location = 1) in vec2 aTexCoord;
 	GLuint aTexCoord_location = 1;
 	glVertexArrayAttribFormat(Texture::VAO, aTexCoord_location, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
 	glVertexArrayAttribBinding(Texture::VAO, aTexCoord_location, vbufIndex);
 	glEnableVertexArrayAttrib(Texture::VAO, aTexCoord_location);
 
-	glCreateBuffers(1, &Texture::UBO_Shared);
-	glNamedBufferData(Texture::UBO_Shared, sizeof(Texture::GPU_UBO_CAMERA), &Graphics::currentCamera->viewProjection, GL_STREAM_DRAW);
-	glClearNamedBufferData(Texture::UBO_Shared, GL_R32F, GL_RED, GL_FLOAT, nullptr); // memset to zero
+	glCreateBuffers(1, &Texture::UBO_Shared_Camera);
+	glNamedBufferData(Texture::UBO_Shared_Camera, sizeof(Texture::GPU_UBO_CAMERA), &Graphics::currentCamera->viewProjection, GL_STREAM_DRAW);
+	glClearNamedBufferData(Texture::UBO_Shared_Camera, GL_R32F, GL_RED, GL_FLOAT, nullptr); // memset to zero
 }
 
 void Texture::finalize()
 {
-	glDeleteBuffers(1, &Texture::UBO_Shared);
+	glDeleteBuffers(1, &Texture::UBO_Shared_Camera);
 	glDeleteBuffers(1, &Texture::EBO);
 	glDeleteBuffers(1, &Texture::VBO);
 	glDeleteVertexArrays(1, &Texture::VAO);
