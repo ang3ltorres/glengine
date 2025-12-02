@@ -70,6 +70,9 @@ void Graphics::initialize(int width, int height, const char *title)
 	// Components
 	Texture::initialize();
 	Mesh::initialize();
+	
+	// Load default 2D shader
+	Graphics::set2D();
 }
 
 void Graphics::finalize()
@@ -141,15 +144,19 @@ void Graphics::setCamera3D(Camera3D *camera)
 	glNamedBufferSubData(Mesh::UBO_Shared_Camera, 0, sizeof(Mesh::GPU_UBO_CAMERA), &GPU_UBO_CAMERA);
 }
 
-void Graphics::set2D()
+void Graphics::set2D(Shader *shader)
 {
+	shader->use();
+
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
 	glDisable(GL_CULL_FACE);
 }
 
-void Graphics::set3D()
+void Graphics::set3D(Shader *shader)
 {
+	shader->use();
+
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);

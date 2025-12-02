@@ -37,15 +37,12 @@ void Model::draw()
 	if (mesh->currentInstance == 0)
 		return;
 
-	Mesh::shader->use();
-	GLuint prog = Mesh::shader->program;
-
 	Mesh::UBO_Light_Data.Material = material;
 	glBindBuffer(GL_UNIFORM_BUFFER, Mesh::UBO_Shared_Light);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Mesh::GPU_UBO_LIGHT), &Mesh::UBO_Light_Data);
 
 	// Material
-	glUniform1f(glGetUniformLocation(prog, "uTime"), glfwGetTime());
+	glUniform1f(glGetUniformLocation(Shader::current->program, "uTime"), glfwGetTime());
 
 	Graphics::setVAO(mesh->VAO);
 

@@ -56,7 +56,6 @@ void Sprite::batch()
 
 void Sprite::draw()
 {
-	Texture::shader->use();
 	Graphics::setVAO(Texture::VAO);
 	Graphics::setTexture(texture->id);
 	

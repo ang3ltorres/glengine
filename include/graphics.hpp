@@ -52,8 +52,8 @@ namespace graphics
 		static void setRenderTexture(RenderTexture *renderTexture = nullptr);
 		static void setCamera3D(Camera3D *camera = nullptr);
 		static void setCamera2D(Camera2D *camera = nullptr);
-		static void set2D();
-		static void set3D();
+		static void set2D(Shader *shader = Texture::shader);
+		static void set3D(Shader *shader = Mesh::shader);
 		static void setVAO(GLuint VAO);
 		static void setTexture(GLuint texture);
 		static void drawBuffer();
