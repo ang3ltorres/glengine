@@ -81,3 +81,13 @@ void Shader::use()
 		glUseProgram(program);
 	}
 }
+
+GLint Shader::getUniformLocation(const char *name)
+{
+	if (uniformCache.find(name) != uniformCache.end())
+		return uniformCache[name];
+
+	GLint location = glGetUniformLocation(program, name);
+	uniformCache[name] = location;
+	return location;
+}

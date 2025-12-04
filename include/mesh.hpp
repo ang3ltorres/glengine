@@ -65,6 +65,7 @@ namespace graphics
 		
 		static GLuint UBO_Shared_Light; // Light
 		static GPU_UBO_LIGHT UBO_Light_Data;
+		static bool lightDirty;
 		
 		static GLuint defaultTexture;
 

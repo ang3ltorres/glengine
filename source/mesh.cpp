@@ -8,6 +8,7 @@ Shader *Mesh::shader;
 GLuint Mesh::UBO_Shared_Camera;
 GLuint Mesh::UBO_Shared_Light;
 Mesh::GPU_UBO_LIGHT Mesh::UBO_Light_Data;
+bool Mesh::lightDirty = true;
 GLuint Mesh::defaultTexture;
 
 void Mesh::initialize()
@@ -41,7 +42,11 @@ void Mesh::finalize()
 
 void Mesh::toggleLighting(bool enable)
 {
-	Mesh::UBO_Light_Data.Enable = enable ? 1 : 0;
+	if (Mesh::UBO_Light_Data.Enable != (enable ? 1 : 0))
+	{
+		Mesh::UBO_Light_Data.Enable = enable ? 1 : 0;
+		Mesh::lightDirty = true;
+	}
 }
 
 int Mesh::addLight(glm::vec3 position, glm::vec3 color, glm::vec3 attenuation)
@@ -53,6 +58,7 @@ int Mesh::addLight(glm::vec3 position, glm::vec3 color, glm::vec3 attenuation)
 	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.LightCount].color       = glm::vec4(color, 0.0f);
 	Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.LightCount].attenuation = glm::vec4(attenuation, 0.0f);
 
+	Mesh::lightDirty = true;
 	return Mesh::UBO_Light_Data.LightCount++;
 }
 
@@ -66,6 +72,7 @@ void Mesh::removeLight(int index)
 		Mesh::UBO_Light_Data.Light[index] = Mesh::UBO_Light_Data.Light[Mesh::UBO_Light_Data.LightCount - 1];
 
 	Mesh::UBO_Light_Data.LightCount--;
+	Mesh::lightDirty = true;
 }
 
 Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)

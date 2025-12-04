@@ -39,10 +39,20 @@ void Model::draw()
 
 	Mesh::UBO_Light_Data.Material = material;
 	glBindBuffer(GL_UNIFORM_BUFFER, Mesh::UBO_Shared_Light);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Mesh::GPU_UBO_LIGHT), &Mesh::UBO_Light_Data);
+
+	if (Mesh::lightDirty)
+	{
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Mesh::GPU_UBO_LIGHT), &Mesh::UBO_Light_Data);
+		Mesh::lightDirty = false;
+	}
+	else
+	{
+		// Only update Material part
+		glBufferSubData(GL_UNIFORM_BUFFER, offsetof(Mesh::GPU_UBO_LIGHT, Material), sizeof(Mesh::MATERIAL), &Mesh::UBO_Light_Data.Material);
+	}
 
 	// Material
-	glUniform1f(glGetUniformLocation(Shader::current->program, "uTime"), glfwGetTime());
+	glUniform1f(Shader::current->getUniformLocation("uTime"), glfwGetTime());
 
 	Graphics::setVAO(mesh->VAO);
 

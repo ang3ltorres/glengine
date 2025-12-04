@@ -114,34 +114,56 @@ void Graphics::setRenderTexture(RenderTexture *renderTexture)
 
 void Graphics::setCamera2D(Camera2D *camera)
 {
-	if (camera)
-		Graphics::currentCamera = camera;
+	Camera2D *newCamera = camera ? camera : Graphics::defaultCamera;
+	
+	if (Graphics::currentCamera != newCamera)
+	{
+		Graphics::currentCamera = newCamera;
+		Graphics::currentCamera->updateViewProjection();
+		glNamedBufferSubData(Texture::UBO_Shared_Camera, 0, sizeof(mat4), &Graphics::currentCamera->viewProjection);
+	}
 	else
-		Graphics::currentCamera = Graphics::defaultCamera;
-
-	Graphics::currentCamera->updateViewProjection();
-
-	//? Submit camera data to GPU (UBO_Shared_Camera)
-	glNamedBufferSubData(Texture::UBO_Shared_Camera, 0, sizeof(mat4), &Graphics::currentCamera->viewProjection);
+	{
+		// Only update if view projection changed (simple check, could be more robust with dirty flag)
+		// For now, we assume if it's the same camera pointer, we might still need to update if it moved.
+		// A better approach is to add a dirty flag to Camera2D.
+		// But for this pass, let's just optimize the switch.
+		Graphics::currentCamera->updateViewProjection();
+		glNamedBufferSubData(Texture::UBO_Shared_Camera, 0, sizeof(mat4), &Graphics::currentCamera->viewProjection);
+	}
 }
 
 void Graphics::setCamera3D(Camera3D *camera)
 {
-	if (camera)
-		Graphics::currentCamera3D = camera;
+	Camera3D *newCamera = camera ? camera : Graphics::defaultCamera3D;
+
+	if (Graphics::currentCamera3D != newCamera)
+	{
+		Graphics::currentCamera3D = newCamera;
+		Graphics::currentCamera3D->updateViewProjection();
+		
+		static Mesh::GPU_UBO_CAMERA GPU_UBO_CAMERA;
+		GPU_UBO_CAMERA.View = Graphics::currentCamera3D->view;
+		GPU_UBO_CAMERA.Projection = Graphics::currentCamera3D->projection;
+		GPU_UBO_CAMERA.ViewProjection = Graphics::currentCamera3D->viewProjection;
+		GPU_UBO_CAMERA.CameraPosition = glm::vec4(Graphics::currentCamera3D->position, 1.0f);
+
+		//? Submit camera data to GPU (UBO_Shared_Camera)
+		glNamedBufferSubData(Mesh::UBO_Shared_Camera, 0, sizeof(Mesh::GPU_UBO_CAMERA), &GPU_UBO_CAMERA);
+	}
 	else
-		Graphics::currentCamera3D = Graphics::defaultCamera3D;
+	{
+		// Same camera, but might have moved.
+		Graphics::currentCamera3D->updateViewProjection();
+		
+		static Mesh::GPU_UBO_CAMERA GPU_UBO_CAMERA;
+		GPU_UBO_CAMERA.View = Graphics::currentCamera3D->view;
+		GPU_UBO_CAMERA.Projection = Graphics::currentCamera3D->projection;
+		GPU_UBO_CAMERA.ViewProjection = Graphics::currentCamera3D->viewProjection;
+		GPU_UBO_CAMERA.CameraPosition = glm::vec4(Graphics::currentCamera3D->position, 1.0f);
 
-	Graphics::currentCamera3D->updateViewProjection();
-
-	static Mesh::GPU_UBO_CAMERA GPU_UBO_CAMERA;
-	GPU_UBO_CAMERA.View = Graphics::currentCamera3D->view;
-	GPU_UBO_CAMERA.Projection = Graphics::currentCamera3D->projection;
-	GPU_UBO_CAMERA.ViewProjection = Graphics::currentCamera3D->viewProjection;
-	GPU_UBO_CAMERA.CameraPosition = glm::vec4(Graphics::currentCamera3D->position, 1.0f);
-
-	//? Submit camera data to GPU (UBO_Shared_Camera)
-	glNamedBufferSubData(Mesh::UBO_Shared_Camera, 0, sizeof(Mesh::GPU_UBO_CAMERA), &GPU_UBO_CAMERA);
+		glNamedBufferSubData(Mesh::UBO_Shared_Camera, 0, sizeof(Mesh::GPU_UBO_CAMERA), &GPU_UBO_CAMERA);
+	}
 }
 
 void Graphics::set2D(Shader *shader)

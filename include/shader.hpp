@@ -14,6 +14,10 @@ namespace graphics
 		static Shader *current;
 
 		void use();
+		GLint getUniformLocation(const char *name);
 		GLuint program;
+
+	private:
+		std::unordered_map<std::string, GLint> uniformCache;
 	};
 }
