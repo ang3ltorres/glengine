@@ -17,7 +17,7 @@ int main()
 	music->setPitch(pitch);
 	music->setLooping(true);
 	music->setVolume(1.0);
-	//music->play();
+	music->play();
 
 	Texture *txr = new Texture("../res/png_test.png", 1);
 	Sprite *spr = new Sprite(txr);
@@ -28,7 +28,7 @@ int main()
 	text->render("Hello !");
 
 	// Setup Camera
-	Graphics::currentCamera3D->position = {7.0f, 2.0f, 0.0f};
+	Graphics::currentCamera3D->position = {7.0f, 4.0f, 0.0f};
 	glm::vec3 dir = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - Graphics::currentCamera3D->position);
 	Graphics::currentCamera3D->yaw = glm::degrees(atan2(dir.z, dir.x));
 	Graphics::currentCamera3D->pitch = glm::degrees(asin(dir.y));
