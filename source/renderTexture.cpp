@@ -4,7 +4,7 @@ using namespace graphics;
 using namespace glm;
 
 RenderTexture::RenderTexture(unsigned int width, unsigned int height, Camera2D *camera)
-: Sprite::Sprite(new Texture(width, height, 1))
+: Sprite::Sprite(new Texture(width, height))
 {
 	// Camera2D
 	internalCamera = camera ? false : true;

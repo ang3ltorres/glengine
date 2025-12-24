@@ -60,6 +60,10 @@ namespace graphics
 		static void removeLight(int index);
 		
 		static Shader *shader;
+		static unsigned int maxInstances;
+		static unsigned int currentInstance;
+		static GLuint SSBO;
+		static GPU_SSBO *SSBO_Data;
 
 		static GLuint UBO_Shared_Camera; // ViewProjection
 		
@@ -68,18 +72,14 @@ namespace graphics
 		
 		static GLuint defaultTexture;
 
-		Mesh(const char *file, Texture *texture, unsigned int maxInstances);
-		Mesh(Vertex3D *vertices, unsigned int numVertices, unsigned int *indices, unsigned int numIndices, Texture *texture, unsigned int maxInstances);
+		Mesh(const char *file, Texture *texture);
+		Mesh(Vertex3D *vertices, unsigned int numVertices, unsigned int *indices, unsigned int numIndices, Texture *texture);
 		Mesh(const Mesh&) = delete;
 		~Mesh();
 
 		Texture *texture;
 		GLuint VAO, VBO, EBO;
-		GLuint SSBO;
-		GPU_SSBO *SSBO_Data;
 		
-		unsigned int maxInstances;
-		unsigned int currentInstance;
 		unsigned int indexCount;
 		
 		bool internalTexture;

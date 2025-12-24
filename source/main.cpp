@@ -17,18 +17,20 @@ int main()
 	music->setPitch(pitch);
 	music->setLooping(true);
 	music->setVolume(1.0);
-	//music->play();
+	music->play();
 
-	Texture *txr = new Texture("../res/png_test.png", 1);
+	Texture *txr = new Texture("../res/png_test.png");
 	Sprite *spr = new Sprite(txr);
-	Mesh *mesh = new Mesh("../res/stage01.glb", nullptr, 1);
+	Mesh *mesh = new Mesh("../res/stage01.glb", nullptr);
+	Mesh *mesh2 = new Mesh("../res/piramid.glb", nullptr);
 	Model *model = new Model(mesh);
+	Model *model2 = new Model(mesh2);
 	Font *font = new Font("../res/mononoki.ttf", 64);
 	Text *text = new Text(font, "OpenGL 3D Test");
 	text->render("Hello !");
 
 	// Setup Camera
-	Graphics::currentCamera3D->position = {7.0f, 2.0f, 0.0f};
+	Graphics::currentCamera3D->position = {7.0f, 4.0f, 0.0f};
 	glm::vec3 dir = glm::normalize(glm::vec3(0.0f, 0.0f, 0.0f) - Graphics::currentCamera3D->position);
 	Graphics::currentCamera3D->yaw = glm::degrees(atan2(dir.z, dir.x));
 	Graphics::currentCamera3D->pitch = glm::degrees(asin(dir.y));
@@ -37,6 +39,10 @@ int main()
 
 	model->scale = {1.0f, 1.0f, 1.0f};
 	model->updateModel();
+
+	model2->scale = {2.0f, 2.0f, 2.0f};
+	model2->position = {0, 1, 2};
+	model2->updateModel();
 
 	// Setup Lighting
 	Mesh::toggleLighting(true);
@@ -76,8 +82,12 @@ int main()
 		model->updateModel();
 
 		Graphics::set3D();
+
 		model->batch();
 		model->draw();
+
+		model2->batch();
+		model2->draw();
 
 		Graphics::drawBuffer();
 		Graphics::pollEvents();
@@ -86,7 +96,9 @@ int main()
 	delete text;
 	delete font;
 	delete model;
+	delete model2;
 	delete mesh;
+	delete mesh2;
 	delete txr;
 
 	Audio::finalize();

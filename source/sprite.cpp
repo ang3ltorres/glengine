@@ -59,12 +59,12 @@ void Sprite::draw()
 	Graphics::setVAO(Texture::VAO);
 	Graphics::setTexture(texture->id);
 	
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, texture->SSBO);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Texture::GPU_SSBO) * texture->currentInstance, texture->SSBO_Data);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, Texture::SSBO);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Texture::GPU_SSBO) * Texture::currentInstance, Texture::SSBO_Data);
 
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Texture::UBO_Shared_Camera);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, texture->UBO_NonShared);
 	
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, texture->currentInstance);
-	texture->currentInstance = 0;
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, Texture::currentInstance);
+	Texture::currentInstance = 0;
 }

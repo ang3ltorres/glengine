@@ -35,6 +35,12 @@ namespace graphics
 
 		//* Generic Draw Texture 2D stuff
 		static Shader *shader;
+
+		static GLuint SSBO;
+		static GPU_SSBO *SSBO_Data;
+		static unsigned int maxInstances;
+		static unsigned int currentInstance;
+
 		static GLuint VAO;
 		static GLuint VBO;
 		static GLuint EBO;
@@ -44,10 +50,10 @@ namespace graphics
 		void createTexture(const unsigned char *pixelData, bool free = true);
 		void createBuffers(int textureType);
 
-		Texture(const char *fileName, unsigned int maxInstances);
-		Texture(const char *fontPath, unsigned int fontSize, Glyph *glyphs, unsigned int maxInstances);
-		Texture(unsigned int width, unsigned int height, unsigned int maxInstances);
-		Texture(const unsigned char *pixelData, unsigned int width, unsigned int height, unsigned int maxInstances);
+		Texture(const char *fileName);
+		Texture(const char *fontPath, unsigned int fontSize, Glyph *glyphs);
+		Texture(unsigned int width, unsigned int height);
+		Texture(const unsigned char *pixelData, unsigned int width, unsigned int height);
 		Texture(const Texture&) = delete;
 		~Texture();
 
@@ -55,10 +61,5 @@ namespace graphics
 
 		GLuint UBO_NonShared;
 		int Type;
-
-		GLuint SSBO;
-		GPU_SSBO *SSBO_Data;
-		unsigned int maxInstances;
-		unsigned int currentInstance;
 	};
 }

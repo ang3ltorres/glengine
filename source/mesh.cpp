@@ -5,6 +5,10 @@
 using namespace graphics;
 
 Shader *Mesh::shader;
+unsigned int Mesh::maxInstances;
+unsigned int Mesh::currentInstance;
+GLuint Mesh::SSBO;
+Mesh::GPU_SSBO *Mesh::SSBO_Data;
 GLuint Mesh::UBO_Shared_Camera;
 GLuint Mesh::UBO_Shared_Light;
 Mesh::GPU_UBO_LIGHT Mesh::UBO_Light_Data;
@@ -13,6 +17,12 @@ GLuint Mesh::defaultTexture;
 void Mesh::initialize()
 {
 	Mesh::shader = new Shader("../shader/phong.vs", "../shader/phong.fs");
+
+	Mesh::maxInstances = 256;
+	Mesh::currentInstance = 0;
+	glCreateBuffers(1, &Mesh::SSBO);
+	glNamedBufferData(Mesh::SSBO, sizeof(Mesh::GPU_SSBO) * Mesh::maxInstances, nullptr, GL_STREAM_DRAW);
+	Mesh::SSBO_Data = new Mesh::GPU_SSBO[Mesh::maxInstances];
 
 	glCreateBuffers(1, &Mesh::UBO_Shared_Camera);
 	glNamedBufferData(Mesh::UBO_Shared_Camera, sizeof(Mesh::GPU_UBO_CAMERA), nullptr, GL_STREAM_DRAW);
@@ -25,7 +35,7 @@ void Mesh::initialize()
 	Mesh::UBO_Light_Data.LightCount = 0;
 	Mesh::UBO_Light_Data.Enable = 0;
 
-	unsigned char whitePixel[] = { 255, 255, 255, 255 };
+	static const unsigned char whitePixel[] = { 255, 255, 255, 255 };
 	glCreateTextures(GL_TEXTURE_2D, 1, &Mesh::defaultTexture);
 	glTextureStorage2D(Mesh::defaultTexture, 1, GL_RGBA8, 1, 1);
 	glTextureSubImage2D(Mesh::defaultTexture, 0, 0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, whitePixel);
@@ -34,8 +44,10 @@ void Mesh::initialize()
 void Mesh::finalize()
 {
 	glDeleteTextures(1, &Mesh::defaultTexture);
-	glDeleteBuffers(1, &Mesh::UBO_Shared_Camera);
 	glDeleteBuffers(1, &Mesh::UBO_Shared_Light);
+	glDeleteBuffers(1, &Mesh::UBO_Shared_Camera);
+	delete[] Mesh::SSBO_Data;
+	glDeleteBuffers(1, &Mesh::SSBO);
 	delete Mesh::shader;
 }
 
@@ -68,8 +80,8 @@ void Mesh::removeLight(int index)
 	Mesh::UBO_Light_Data.LightCount--;
 }
 
-Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
-: texture(texture), VAO(0), VBO(0), EBO(0), SSBO(0), SSBO_Data(nullptr), maxInstances(maxInstances), currentInstance(0), indexCount(0), internalTexture(false)
+Mesh::Mesh(const char *file, Texture *texture)
+: texture(texture), VAO(0), VBO(0), EBO(0), indexCount(0), internalTexture(false)
 {
 	tinygltf::Model model;
 	tinygltf::TinyGLTF loader;
@@ -231,7 +243,7 @@ Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
 						if (!img.image.empty())
 						{
 							// Create texture from image data	
-							this->texture = new Texture(img.image.data(), img.width, img.height, 1);
+							this->texture = new Texture(img.image.data(), img.width, img.height);
 							this->internalTexture = true;
 						}
 					}
@@ -274,15 +286,10 @@ Mesh::Mesh(const char *file, Texture *texture, unsigned int maxInstances)
 	glEnableVertexArrayAttrib(VAO, 3);
 	glVertexArrayAttribFormat(VAO, 3, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, color));
 	glVertexArrayAttribBinding(VAO, 3, vbufIndex);
-
-	// SSBO
-	glCreateBuffers(1, &SSBO);
-	glNamedBufferData(SSBO, sizeof(GPU_SSBO) * maxInstances, nullptr, GL_STREAM_DRAW);
-	SSBO_Data = new GPU_SSBO[maxInstances];
 }
 
-Mesh::Mesh(Vertex3D *vertices, unsigned int numVertices, unsigned int *indices, unsigned int numIndices, Texture *texture, unsigned int maxInstances)
-: texture(texture), maxInstances(maxInstances), currentInstance(0), indexCount(numIndices)
+Mesh::Mesh(Vertex3D *vertices, unsigned int numVertices, unsigned int *indices, unsigned int numIndices, Texture *texture)
+: texture(texture), indexCount(numIndices)
 {
 	glCreateVertexArrays(1, &VAO);
 
@@ -316,20 +323,13 @@ Mesh::Mesh(Vertex3D *vertices, unsigned int numVertices, unsigned int *indices, 
 	glEnableVertexArrayAttrib(VAO, 3);
 	glVertexArrayAttribFormat(VAO, 3, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, color));
 	glVertexArrayAttribBinding(VAO, 3, vbufIndex);
-
-	// SSBO
-	glCreateBuffers(1, &SSBO);
-	glNamedBufferData(SSBO, sizeof(GPU_SSBO) * maxInstances, nullptr, GL_STREAM_DRAW);
-	SSBO_Data = new GPU_SSBO[maxInstances];
 }
 
 Mesh::~Mesh()
 {
-	glDeleteBuffers(1, &SSBO);
 	glDeleteBuffers(1, &EBO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteVertexArrays(1, &VAO);
-	delete[] SSBO_Data;
 
 	if (internalTexture && texture)
 		delete texture;

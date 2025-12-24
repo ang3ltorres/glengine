@@ -28,6 +28,12 @@ static const unsigned int indices[] =
 };
 
 Shader *Texture::shader;
+
+GLuint Texture::SSBO;
+Texture::GPU_SSBO *Texture::SSBO_Data;
+unsigned int Texture::maxInstances;
+unsigned int Texture::currentInstance;
+
 GLuint Texture::VAO;
 GLuint Texture::VBO;
 GLuint Texture::EBO;
@@ -37,6 +43,12 @@ void Texture::initialize()
 {
 	//* VAO/Shader For 2D Texture drawing
 	Texture::shader = new Shader("../shader/texture.vs", "../shader/texture.fs");
+
+	Texture::maxInstances = 256;
+	Texture::currentInstance = 0;
+	glCreateBuffers(1, &Texture::SSBO);
+	glNamedBufferData(Texture::SSBO, sizeof(GPU_SSBO) * Texture::maxInstances, nullptr, GL_STREAM_DRAW);
+	Texture::SSBO_Data = new GPU_SSBO[Texture::maxInstances];
 
 	glCreateVertexArrays(1, &Texture::VAO);
 
@@ -74,6 +86,8 @@ void Texture::finalize()
 	glDeleteBuffers(1, &Texture::EBO);
 	glDeleteBuffers(1, &Texture::VBO);
 	glDeleteVertexArrays(1, &Texture::VAO);
+	glDeleteBuffers(1, &Texture::SSBO);
+	delete[] Texture::SSBO_Data;
 	delete Texture::shader;
 }
 
@@ -196,17 +210,12 @@ void Texture::createTexture(const unsigned char *pixelData, bool free)
 
 void Texture::createBuffers(int textureType)
 {
-	glCreateBuffers(1, &SSBO);
-	glNamedBufferData(SSBO, sizeof(GPU_SSBO) * maxInstances, nullptr, GL_STREAM_DRAW);
-	SSBO_Data = new GPU_SSBO[maxInstances];
-
 	Type = textureType;
 	glCreateBuffers(1, &UBO_NonShared);
 	glNamedBufferData(UBO_NonShared, sizeof(int), &Type, GL_STREAM_DRAW);
 }
 
-Texture::Texture(const char *fileName, unsigned int maxInstances)
-: maxInstances(maxInstances), currentInstance(0)
+Texture::Texture(const char *fileName)
 {
 	unsigned char *pixelData;
 	Texture::getPixelDataPNG(fileName, pixelData, &width, &height);
@@ -214,8 +223,7 @@ Texture::Texture(const char *fileName, unsigned int maxInstances)
 	createBuffers(0);
 }
 
-Texture::Texture(const char *fontPath, unsigned int fontSize, Glyph *glyphs, unsigned int maxInstances)
-: maxInstances(maxInstances), currentInstance(0)
+Texture::Texture(const char *fontPath, unsigned int fontSize, Glyph *glyphs)
 {
 	unsigned char *pixelData;
 	Texture::getPixelDataFont(fontPath, fontSize, glyphs, pixelData, &width, &height);
@@ -223,16 +231,16 @@ Texture::Texture(const char *fontPath, unsigned int fontSize, Glyph *glyphs, uns
 	createBuffers(2);
 }
 
-Texture::Texture(unsigned int width, unsigned int height, unsigned int maxInstances)
-: width(width), height(height), maxInstances(maxInstances), currentInstance(0)
+Texture::Texture(unsigned int width, unsigned int height)
+: width(width), height(height)
 {
 	unsigned char *pixelData = nullptr;
 	createTexture(pixelData, false);
 	createBuffers(1);
 }
 
-Texture::Texture(const unsigned char *pixelData, unsigned int width, unsigned int height, unsigned int maxInstances)
-: width(width), height(height), maxInstances(maxInstances), currentInstance(0)
+Texture::Texture(const unsigned char *pixelData, unsigned int width, unsigned int height)
+: width(width), height(height)
 {
 	createTexture(pixelData, false);
 	createBuffers(1);
@@ -241,9 +249,7 @@ Texture::Texture(const unsigned char *pixelData, unsigned int width, unsigned in
 Texture::~Texture()
 {
 	glDeleteBuffers(1, &UBO_NonShared);
-	glDeleteBuffers(1, &SSBO);
 	glDeleteTextures(1, &id);
-	delete[] SSBO_Data;
 }
 
 void Texture::updateTexture(const unsigned char *pixelData, unsigned int newWidth, unsigned int newHeight)

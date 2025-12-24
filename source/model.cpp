@@ -23,9 +23,9 @@ void Model::updateModel()
 
 void Model::batch()
 {
-	if (mesh->currentInstance >= mesh->maxInstances) return;
+	if (Mesh::currentInstance >= Mesh::maxInstances) return;
 
-	mesh->SSBO_Data[mesh->currentInstance++] =
+	Mesh::SSBO_Data[Mesh::currentInstance++] =
 	{
 		modelMatrix,
 		color
@@ -34,7 +34,7 @@ void Model::batch()
 
 void Model::draw()
 {
-	if (mesh->currentInstance == 0)
+	if (Mesh::currentInstance == 0)
 		return;
 
 	Mesh::UBO_Light_Data.Material = material;
@@ -51,13 +51,13 @@ void Model::draw()
 	else
 		Graphics::setTexture(Mesh::defaultTexture);
 
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mesh->SSBO);
-	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Mesh::GPU_SSBO) * mesh->currentInstance, mesh->SSBO_Data);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, Mesh::SSBO);
+	glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Mesh::GPU_SSBO) * Mesh::currentInstance, Mesh::SSBO_Data);
 
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, Mesh::UBO_Shared_Camera);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 2, Mesh::UBO_Shared_Light);
 
-	glDrawElementsInstanced(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0, mesh->currentInstance);
-	mesh->currentInstance = 0;
+	glDrawElementsInstanced(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0, Mesh::currentInstance);
+	Mesh::currentInstance = 0;
 }
 
