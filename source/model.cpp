@@ -5,7 +5,7 @@
 using namespace graphics;
 using namespace glm;
 
-Model::Model(Mesh *mesh, Mesh::MATERIAL material)
+Model::Model(Mesh *mesh, Mesh::GPU_MATERIAL material)
 : mesh(mesh), position(0.0f), rotation(0.0f), scale(1.0f), color(1.0f), material(material)
 {
 	updateModel();

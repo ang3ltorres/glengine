@@ -17,14 +17,14 @@ namespace graphics
 	{
 	public:
 
-		struct LIGHT
+		struct GPU_LIGHT
 		{
 			glm::vec4 position; // x=position, y=position, z=position, w=unused
 			glm::vec4 color; // x=red, y=green, z=blue, w=unused
 			glm::vec4 attenuation; // x=constant, y=linear, z=quadratic, w=unused
 		};
 
-		struct MATERIAL
+		struct GPU_MATERIAL
 		{
 			glm::vec3 specular;
 			float shininess;
@@ -46,8 +46,8 @@ namespace graphics
 
 		struct alignas(16) GPU_UBO_LIGHT
 		{
-			LIGHT Light[8];
-			MATERIAL Material;
+			GPU_LIGHT Light[8];
+			GPU_MATERIAL Material;
 			int LightCount;
 			int Enable;
 		};

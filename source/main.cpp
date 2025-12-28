@@ -69,7 +69,23 @@ int main()
 		Graphics::clearScreen({0, 0, 0, 255});
 
 		Graphics::set2D();
+
+		spr->color = {255, 0, 0, 255};
+		spr->dst.x = 0; spr->dst.y = 0;
+		spr->updateModel();
 		spr->batch();
+
+		spr->color = {0, 255, 0, 255};
+		spr->dst.x = 100; spr->dst.y = 0;
+		spr->updateModel();
+		spr->batch();
+	
+		spr->color = {0, 0, 255, 255};
+		spr->dst.x = 200; spr->dst.y = 0;
+		spr->updateModel();
+		spr->batch();
+		
+
 		spr->draw();
 
 		text->renderTexture->batch();

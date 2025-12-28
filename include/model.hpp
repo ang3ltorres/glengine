@@ -8,7 +8,7 @@ namespace graphics
 	class Model
 	{
 	public:
-		Model(Mesh *mesh, Mesh::MATERIAL material = {glm::vec3(1.0f), 32.0f});
+		Model(Mesh *mesh, Mesh::GPU_MATERIAL material = {glm::vec3(1.0f), 32.0f});
 		Model(const Model&) = default;
 		~Model() = default;
 
@@ -18,7 +18,7 @@ namespace graphics
 		glm::vec3 rotation; // Euler angles in degrees
 		glm::vec3 scale;
 		glm::vec4 color; // Tint color
-		Mesh::MATERIAL material;
+		Mesh::GPU_MATERIAL material;
 
 		glm::mat4 modelMatrix;
 

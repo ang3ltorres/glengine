@@ -36,14 +36,9 @@ void main()
 	InstanceData instance = instances[gl_InstanceID];
 	mat4 model = instance.Model;
 
-	// PSX-style wavy vertex effect
-	vec3 wavyPos = aPos;
-	wavyPos.y += 0.2 * sin(4.0 * wavyPos.x + uTime * 2.0);
-	wavyPos.x += 0.2 * sin(4.0 * wavyPos.z + uTime * 1.5);
-
-	gl_Position = ViewProjection * model * vec4(wavyPos, 1.0);
+	gl_Position = ViewProjection * model * vec4(aPos, 1.0);
 	TexCoord = aTexCoord;
 	Color = instance.Color * aColor;
-	FragPos = vec3(model * vec4(wavyPos, 1.0));
+	FragPos = vec3(model * vec4(aPos, 1.0));
 	Normal = mat3(transpose(inverse(model))) * aNormal;
 }
