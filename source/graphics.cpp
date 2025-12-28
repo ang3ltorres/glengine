@@ -41,14 +41,15 @@ void Graphics::initialize(int width, int height, const char *title)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_CULL_FACE);
 	glDisable(GL_STENCIL_TEST);
   glfwSwapInterval(1);
 	glActiveTexture(GL_TEXTURE0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
 	Graphics::clearScreen({255, 255, 255, 255});
 
 	Shader::current  = nullptr;
+
 	Graphics::currentVAO     = 0;
 	Graphics::currentTexture = 0;
 	

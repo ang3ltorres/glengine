@@ -196,7 +196,6 @@ void Texture::createTexture(const unsigned char *pixelData, bool free)
 {
 	glCreateTextures(GL_TEXTURE_2D, 1, &id);
 	glTextureStorage2D(id, 1, GL_RGBA8, width, height);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 	glTextureSubImage2D(id, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
 
 	glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -266,7 +265,6 @@ void Texture::updateTexture(const unsigned char *pixelData, unsigned int newWidt
 		glCreateTextures(GL_TEXTURE_2D, 1, &newID);
 
 		glTextureStorage2D(newID, 1, GL_RGBA8, width, height);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 		glTextureSubImage2D(newID, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
 
 		glTextureParameteri(newID, GL_TEXTURE_WRAP_S, GL_REPEAT);
