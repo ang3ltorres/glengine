@@ -219,7 +219,7 @@ Texture::Texture(const char *fileName)
 {
 	unsigned char *pixelData;
 	Texture::getPixelDataPNG(fileName, pixelData, &width, &height);
-	createTexture(pixelData);
+	createTexture(pixelData, true);
 	createBuffers(0);
 }
 
@@ -227,7 +227,7 @@ Texture::Texture(const char *fontPath, unsigned int fontSize, Glyph *glyphs)
 {
 	unsigned char *pixelData;
 	Texture::getPixelDataFont(fontPath, fontSize, glyphs, pixelData, &width, &height);
-	createTexture(pixelData);
+	createTexture(pixelData, true);
 	createBuffers(2);
 }
 

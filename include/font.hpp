@@ -3,7 +3,6 @@
 #include "pch.hpp"
 
 #include "sprite.hpp"
-#include "glyph.hpp"
 
 namespace graphics
 {
